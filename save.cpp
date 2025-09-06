@@ -489,8 +489,8 @@ void md::shift_audio_memory_up()
 	{
 		z80ram[i] = z80ram[i + 1];
 	}
-	// Clear the last byte
-	z80ram[0x1FFF] = 0;
+	// Clear the last byte -- not sure we want this if going for max glitching
+	// z80ram[0x1FFF] = 0;
 }
 
 /**
@@ -509,6 +509,6 @@ void md::shift_audio_memory_down()
 	{
 		z80ram[i] = z80ram[i - 1];
 	}
-	// Clear the first byte
-	z80ram[0] = 0;
+	// Clear the first byte -- not sure we want this if going for max glitching
+	// z80ram[0] = 0;
 }
