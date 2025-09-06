@@ -500,11 +500,11 @@ void md_vdp::shift_vram_down()
 }
 
 /**
- * Shift VRAM contents down by a random number of bytes in range 0-15.
+ * Shift VRAM contents down by a random number of bytes in range 0-63.
  */
 void md_vdp::shift_vram_down_random()
 {
-  int shift_amount = rand() % 16; // Get a random number between 0 and 15
+  int shift_amount = rand() % 64; // Get a random number between 0 and 63
   // Move all bytes down by the shift amount
   for (int i = 0xFFFF; i > shift_amount; i--)
   {
