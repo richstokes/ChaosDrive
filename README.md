@@ -15,7 +15,8 @@ Results in a number of weird, wonderful, interesting, insane effects. The softwa
 
 # Build
 ## Building - Mac
-`./buildandrun.sh` "works on my machine". Installs dependencies via homebrew and then builds the app. More info [here](BUILDING_ON_MACOS.md)
+`./buildandrun.sh` "works on my machine".  
+Installs dependencies via homebrew and then builds the app. More info [here](BUILDING_ON_MACOS.md)
 
 ## Building - Windows
 TBD
