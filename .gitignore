@@ -58,3 +58,17 @@ dkms.conf
 
 # debug information files
 *.dwo
+
+# Autotools generated files
+.deps/
+autom4te.cache/
+Makefile
+Makefile.in
+aclocal.m4
+configure
+compile
+config.guess
+config.sub
+depcomp
+install-sh
+missing
