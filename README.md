@@ -15,8 +15,8 @@ Results in a number of weird, wonderful, interesting, insane effects. The softwa
 
 # Build
 ## Building - Mac
-`./buildandrun.sh` "works on my machine".  
-Installs dependencies via homebrew and then builds the app. More info [here](BUILDING_ON_MACOS.md)
+`./buildandrun.sh` - A vibe-coded build script that "works on my machine".  
+Installs dependencies via homebrew and then builds the app. More info [here](BUILDING_ON_MACOS.md)  
 
 ## Building - Windows
 TBD
@@ -26,10 +26,18 @@ TBD
 
 
 # Run
+## Mac / Linux
 `./dgen <ROM>`, e.g. `./dgen sonic1.md`
+
+## Windows
+TBD
 
 
 # Keys
+## Emulator
+- Keys A,S,D: ABC on the controller
+- Arrow keys: D-Pad on the controller
+
 ## VRAM Controls
 - Key 9: Shift VRAM contents up one byte
 - Key 0: Shift VRAM contents down one byte
