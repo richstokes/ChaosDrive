@@ -30,7 +30,7 @@ TBD
 `./dgen <ROM>`, e.g. `./dgen sonic1.md`
 
 ## Windows
-TBD
+Drag a ROM file onto the dgen.exe
 
 
 # Keys
