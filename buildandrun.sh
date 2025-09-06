@@ -119,7 +119,9 @@ build_project() {
         make clean >/dev/null 2>&1 || true
     fi
     
-    # Build with x86_64 architecture
+    # Build with x86_64 architecture using parallel compilation
+    # Use 8 parallel jobs (leaving 2 cores free for system responsiveness)
+    # arch -x86_64 make -j8 # Seems to not work?
     arch -x86_64 make
     
     print_success "Build completed successfully!"
