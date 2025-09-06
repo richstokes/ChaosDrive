@@ -68,7 +68,7 @@ static void pd_message_cursor(unsigned int mark, const char *msg, ...);
 static int vram_control_init();
 static void vram_control_deinit();
 static void vram_control_draw();
-static void vram_control_handle_click(int x, int y, md &megad);
+static bool vram_control_handle_click(int x, int y, md &megad);
 
 /// Generic type for supported colour depths.
 typedef union
@@ -4127,8 +4127,8 @@ int pd_graphics_init(int want_sound, int want_pal, int hz)
 	SDL_EnableUNICODE(1);
 	// Set the titlebar.
 	SDL_WM_SetCaption("Megablaster9000", "Megablaster9000");
-	// Hide the cursor.
-	SDL_ShowCursor(0);
+	// Keep the cursor visible.
+	SDL_ShowCursor(1);
 	// Initialize screen.
 	if (screen_init(0, 0))
 		goto fail;
@@ -6596,8 +6596,8 @@ static void mouse_grab(bool grab)
 
 	if ((grab) && (!pd_freeze) && (mode == SDL_GRAB_OFF))
 	{
-		// Hide the cursor.
-		SDL_ShowCursor(0);
+		// Keep the cursor visible even when trapped.
+		SDL_ShowCursor(1);
 		pd_message("Mouse trapped. Stop emulation to release.");
 		SDL_WM_GrabInput(SDL_GRAB_ON);
 	}
@@ -6763,6 +6763,8 @@ int pd_handle_events(md &megad)
 			SDL_PauseAudio(debug_trap == true);
 	}
 #endif
+	// Keep mouse cursor always visible - removed auto-hide logic
+	/*
 	if ((hide_mouse) &&
 		((hide_mouse_when - pd_usecs()) >= MOUSE_SHOW_USECS))
 	{
@@ -6770,6 +6772,7 @@ int pd_handle_events(md &megad)
 			SDL_ShowCursor(0);
 		hide_mouse = false;
 	}
+	*/
 next_event:
 	if (mouse_motion_released(&event))
 		goto mouse_motion;
@@ -7121,10 +7124,9 @@ next_event:
 	case SDL_MOUSEMOTION:
 		if (!mouse_is_grabbed())
 		{
-			// Only show mouse pointer for a few seconds.
+			// Keep mouse pointer visible.
 			SDL_ShowCursor(1);
-			hide_mouse_when = (pd_usecs() + MOUSE_SHOW_USECS);
-			hide_mouse = true;
+			// Don't set up automatic hiding
 			break;
 		}
 	mouse_motion:
@@ -7215,18 +7217,23 @@ next_event:
 				return 0;
 		break;
 	case SDL_MOUSEBUTTONDOWN:
+	{
 		assert(event.button.state == SDL_PRESSED);
 		// Check for VRAM control window clicks first
+		bool vram_click_handled = false;
 		if (event.button.button == SDL_BUTTON_LEFT)
 		{
-			vram_control_handle_click(event.button.x, event.button.y, megad);
+			vram_click_handled = vram_control_handle_click(event.button.x, event.button.y, megad);
 		}
 #ifdef WITH_DEBUGGER
 		if (!debug_trap)
 #endif
+		// Only grab mouse if VRAM control didn't handle the click
+		if (!vram_click_handled)
 			mouse_grab(true);
 		pressed = true;
 		goto mouse_button;
+	}
 	case SDL_MOUSEBUTTONUP:
 		assert(event.button.state == SDL_RELEASED);
 		pressed = false;
@@ -7564,10 +7571,10 @@ static void vram_control_draw()
  * @param y Y coordinate of click.
  * @param megad Reference to the Mega Drive emulator instance.
  */
-static void vram_control_handle_click(int x, int y, md &megad)
+static bool vram_control_handle_click(int x, int y, md &megad)
 {
 	if (!vram_window.initialized)
-		return;
+		return false;
 
 	// Convert screen coordinates to VRAM window coordinates
 	int vram_x = x - (screen.surface->w - vram_window.width - 10);
@@ -7576,7 +7583,7 @@ static void vram_control_handle_click(int x, int y, md &megad)
 	// Check if click is within VRAM window bounds
 	if (vram_x < 0 || vram_x >= (int)vram_window.width ||
 		vram_y < 0 || vram_y >= (int)vram_window.height)
-		return;
+		return false;
 
 	// Check if click is on VRAM plus button
 	if (vram_x >= vram_window.vram_plus_button.x &&
@@ -7588,7 +7595,7 @@ static void vram_control_handle_click(int x, int y, md &megad)
 		// Shift VRAM up
 		megad.vdp.shift_vram_up();
 		pd_message("VRAM shifted up by 1 byte");
-		return;
+		return true;
 	}
 
 	// Check if click is on VRAM minus button
@@ -7601,7 +7608,7 @@ static void vram_control_handle_click(int x, int y, md &megad)
 		// Shift VRAM down
 		megad.vdp.shift_vram_down();
 		pd_message("VRAM shifted down by 1 byte");
-		return;
+		return true;
 	}
 
 	// Check if click is on Audio plus button
@@ -7614,7 +7621,7 @@ static void vram_control_handle_click(int x, int y, md &megad)
 		// Shift Audio memory up
 		megad.shift_audio_memory_up();
 		pd_message("Audio memory shifted up by 1 byte");
-		return;
+		return true;
 	}
 
 	// Check if click is on Audio minus button
@@ -7627,6 +7634,9 @@ static void vram_control_handle_click(int x, int y, md &megad)
 		// Shift Audio memory down
 		megad.shift_audio_memory_down();
 		pd_message("Audio memory shifted down by 1 byte");
-		return;
+		return true;
 	}
+
+	// Click was in VRAM window but not on any button
+	return true;
 }

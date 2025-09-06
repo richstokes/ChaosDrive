@@ -201,11 +201,11 @@ CCASDEPMODE = depmode=gcc3
 CCASFLAGS = -g -O2
 CCDEPMODE = depmode=gcc3
 CC_FOR_BUILD = gcc
-CFLAGS = -g -O2 -I/opt/homebrew/include/SDL -D_THREAD_SAFE
+CFLAGS = -g -O2 -I/usr/local/include/SDL -D_THREAD_SAFE
 CFLAGS_B = CFLAGS
 CFLAGS_FOR_BUILD = -g -O2
 CPP = gcc -E
-CPPFLAGS =  -I/opt/homebrew/include/SDL -D_THREAD_SAFE
+CPPFLAGS =  -I/usr/local/include/SDL -D_THREAD_SAFE
 CPPFLAGS_B = CPPFLAGS
 CPPFLAGS_FOR_BUILD = 
 CSCOPE = cscope
@@ -228,7 +228,7 @@ ECHO_T =
 ETAGS = etags
 EXEEXT = 
 EXEEXT_FOR_BUILD = 
-INSTALL = /opt/homebrew/bin/ginstall -c
+INSTALL = /usr/bin/install -c
 INSTALL_DATA = ${INSTALL} -m 644
 INSTALL_PROGRAM = ${INSTALL}
 INSTALL_SCRIPT = ${INSTALL}
@@ -254,11 +254,11 @@ PACKAGE_TARNAME = dgen-sdl
 PACKAGE_URL = http://sourceforge.net/projects/dgen
 PACKAGE_VERSION = 1.33
 PATH_SEPARATOR = :
-PKG_CONFIG = /opt/homebrew/bin/pkg-config
+PKG_CONFIG = /usr/local/bin/pkg-config
 PKG_CONFIG_LIBDIR = 
 PKG_CONFIG_PATH = 
 RANLIB = ranlib
-SDL_CFLAGS = -I/opt/homebrew/include/SDL -D_THREAD_SAFE
+SDL_CFLAGS = -I/usr/local/include/SDL -D_THREAD_SAFE
 SDL_CONFIG = pkg-config sdl
 SDL_LIBS = -L/usr/local/lib -lSDLmain -lSDL -Wl,-framework,Cocoa
 SET_MAKE = 
@@ -323,7 +323,7 @@ target_vendor = apple
 top_build_prefix = ../
 top_builddir = ..
 top_srcdir = ..
-AM_CPPFLAGS = -I$(top_srcdir) -I/opt/homebrew/include/SDL -D_THREAD_SAFE -I$(top_srcdir)/hqx/src \
+AM_CPPFLAGS = -I$(top_srcdir) -I/usr/local/include/SDL -D_THREAD_SAFE -I$(top_srcdir)/hqx/src \
 	-DHQX_NO_CALLCONV -DHQX_NO_API -I$(top_srcdir)/scale2x \
 	-I$(top_srcdir)/dz80 -D_DZ80_EXCLUDE_SCRIPT
 SUFFIXES = .pbm
