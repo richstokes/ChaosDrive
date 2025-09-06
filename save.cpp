@@ -460,3 +460,33 @@ int md::export_gst(FILE *hand)
 		return -1;
 	return 0;
 }
+
+/**
+ * Shift audio memory (Z80 RAM) contents up by one byte.
+ * This moves all data one byte earlier in memory.
+ */
+void md::shift_audio_memory_up()
+{
+	// Move all bytes one position up (toward lower addresses)
+	// Z80 RAM is 8KB (0x2000 bytes)
+	for (int i = 0; i < 0x1FFF; i++) {
+		z80ram[i] = z80ram[i + 1];
+	}
+	// Clear the last byte
+	z80ram[0x1FFF] = 0;
+}
+
+/**
+ * Shift audio memory (Z80 RAM) contents down by one byte.
+ * This moves all data one byte later in memory.
+ */
+void md::shift_audio_memory_down()
+{
+	// Move all bytes one position down (toward higher addresses)
+	// Z80 RAM is 8KB (0x2000 bytes)
+	for (int i = 0x1FFF; i > 0; i--) {
+		z80ram[i] = z80ram[i - 1];
+	}
+	// Clear the first byte
+	z80ram[0] = 0;
+}

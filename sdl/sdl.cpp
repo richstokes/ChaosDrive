@@ -141,14 +141,18 @@ struct vram_control_window {
 	unsigned int height;
 	bool initialized;
 	// Button areas (x, y, width, height)
-	SDL_Rect plus_button;
-	SDL_Rect minus_button;
+	SDL_Rect vram_plus_button;
+	SDL_Rect vram_minus_button;
+	SDL_Rect audio_plus_button;
+	SDL_Rect audio_minus_button;
 };
 
 static struct vram_control_window vram_window = {
-	NULL, 200, 100, false,
-	{10, 10, 80, 30},   // plus button
-	{110, 10, 80, 30}   // minus button
+	NULL, 300, 100, false,
+	{10, 10, 80, 30},    // VRAM plus button
+	{100, 10, 80, 30},   // VRAM minus button
+	{10, 50, 80, 30},    // Audio plus button  
+	{100, 50, 80, 30}    // Audio minus button
 };
 
 static struct {
@@ -7010,13 +7014,21 @@ static void vram_control_draw()
 	// Clear background to gray
 	SDL_FillRect(surface, NULL, SDL_MapRGB(surface->format, 128, 128, 128));
 	
-	// Draw plus button (green background)
-	SDL_FillRect(surface, &vram_window.plus_button, 
+	// Draw VRAM plus button (green background)
+	SDL_FillRect(surface, &vram_window.vram_plus_button, 
 		SDL_MapRGB(surface->format, 100, 200, 100));
 		
-	// Draw minus button (red background)  
-	SDL_FillRect(surface, &vram_window.minus_button,
+	// Draw VRAM minus button (red background)  
+	SDL_FillRect(surface, &vram_window.vram_minus_button,
 		SDL_MapRGB(surface->format, 200, 100, 100));
+		
+	// Draw Audio plus button (light green background)
+	SDL_FillRect(surface, &vram_window.audio_plus_button, 
+		SDL_MapRGB(surface->format, 150, 250, 150));
+		
+	// Draw Audio minus button (light red background)  
+	SDL_FillRect(surface, &vram_window.audio_minus_button,
+		SDL_MapRGB(surface->format, 250, 150, 150));
 	
 	// For simplicity, we'll just display the control window as an overlay
 	// on the main screen. In SDL 1.2, true multiple windows aren't supported.
@@ -7051,11 +7063,11 @@ static void vram_control_handle_click(int x, int y, md &megad)
 		vram_y < 0 || vram_y >= (int)vram_window.height)
 		return;
 	
-	// Check if click is on plus button
-	if (vram_x >= vram_window.plus_button.x &&
-		vram_x < vram_window.plus_button.x + vram_window.plus_button.w &&
-		vram_y >= vram_window.plus_button.y &&
-		vram_y < vram_window.plus_button.y + vram_window.plus_button.h) {
+	// Check if click is on VRAM plus button
+	if (vram_x >= vram_window.vram_plus_button.x &&
+		vram_x < vram_window.vram_plus_button.x + vram_window.vram_plus_button.w &&
+		vram_y >= vram_window.vram_plus_button.y &&
+		vram_y < vram_window.vram_plus_button.y + vram_window.vram_plus_button.h) {
 		
 		// Shift VRAM up
 		megad.vdp.shift_vram_up();
@@ -7063,15 +7075,39 @@ static void vram_control_handle_click(int x, int y, md &megad)
 		return;
 	}
 	
-	// Check if click is on minus button
-	if (vram_x >= vram_window.minus_button.x &&
-		vram_x < vram_window.minus_button.x + vram_window.minus_button.w &&
-		vram_y >= vram_window.minus_button.y &&
-		vram_y < vram_window.minus_button.y + vram_window.minus_button.h) {
+	// Check if click is on VRAM minus button
+	if (vram_x >= vram_window.vram_minus_button.x &&
+		vram_x < vram_window.vram_minus_button.x + vram_window.vram_minus_button.w &&
+		vram_y >= vram_window.vram_minus_button.y &&
+		vram_y < vram_window.vram_minus_button.y + vram_window.vram_minus_button.h) {
 		
 		// Shift VRAM down
 		megad.vdp.shift_vram_down();
 		pd_message("VRAM shifted down by 1 byte");
+		return;
+	}
+	
+	// Check if click is on Audio plus button
+	if (vram_x >= vram_window.audio_plus_button.x &&
+		vram_x < vram_window.audio_plus_button.x + vram_window.audio_plus_button.w &&
+		vram_y >= vram_window.audio_plus_button.y &&
+		vram_y < vram_window.audio_plus_button.y + vram_window.audio_plus_button.h) {
+		
+		// Shift Audio memory up
+		megad.shift_audio_memory_up();
+		pd_message("Audio memory shifted up by 1 byte");
+		return;
+	}
+	
+	// Check if click is on Audio minus button
+	if (vram_x >= vram_window.audio_minus_button.x &&
+		vram_x < vram_window.audio_minus_button.x + vram_window.audio_minus_button.w &&
+		vram_y >= vram_window.audio_minus_button.y &&
+		vram_y < vram_window.audio_minus_button.y + vram_window.audio_minus_button.h) {
+		
+		// Shift Audio memory down
+		megad.shift_audio_memory_down();
+		pd_message("Audio memory shifted down by 1 byte");
 		return;
 	}
 }

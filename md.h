@@ -412,6 +412,10 @@ public:
   void m68k_state_restore();
   void z80_state_dump();
   void z80_state_restore();
+  
+  // Audio memory (Z80 RAM) manipulation functions
+  void shift_audio_memory_up();
+  void shift_audio_memory_down();
 private:
 #ifdef WITH_MZ80
   struct mz80context z80;
