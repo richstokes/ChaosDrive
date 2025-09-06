@@ -63,6 +63,12 @@ static size_t pd_message_display(const char *msg, size_t len,
 static void pd_message_postpone(const char *msg);
 static void pd_message_cursor(unsigned int mark, const char *msg, ...);
 
+// VRAM control window functions
+static int vram_control_init();
+static void vram_control_deinit();
+static void vram_control_draw();
+static void vram_control_handle_click(int x, int y, md &megad);
+
 /// Generic type for supported colour depths.
 typedef union {
 	uint8_t *u8;
@@ -127,6 +133,23 @@ struct screen {
 };
 
 static struct screen screen;
+
+// VRAM control window structure
+struct vram_control_window {
+	SDL_Surface *surface;
+	unsigned int width;
+	unsigned int height;
+	bool initialized;
+	// Button areas (x, y, width, height)
+	SDL_Rect plus_button;
+	SDL_Rect minus_button;
+};
+
+static struct vram_control_window vram_window = {
+	NULL, 200, 100, false,
+	{10, 10, 80, 30},   // plus button
+	{110, 10, 80, 30}   // minus button
+};
 
 static struct {
 	const unsigned int width; ///< 320
@@ -194,6 +217,8 @@ static void screen_update_once()
 		return;
 	}
 #endif
+	// Draw VRAM control window overlay
+	vram_control_draw();
 	SDL_Flip(screen.surface);
 }
 
@@ -3824,6 +3849,9 @@ int pd_graphics_init(int want_sound, int want_pal, int hz)
 	// Initialize screen.
 	if (screen_init(0, 0))
 		goto fail;
+	// Initialize VRAM control window.
+	if (vram_control_init())
+		goto fail;
 	// Initialize scaling.
 	set_scaling(scaling_names[dgen_scaling % NUM_SCALING]);
 	DEBUG(("using scaling filter \"%s\"",
@@ -6686,6 +6714,10 @@ next_event:
 		break;
 	case SDL_MOUSEBUTTONDOWN:
 		assert(event.button.state == SDL_PRESSED);
+		// Check for VRAM control window clicks first
+		if (event.button.button == SDL_BUTTON_LEFT) {
+			vram_control_handle_click(event.button.x, event.button.y, megad);
+		}
 #ifdef WITH_DEBUGGER
 		if (!debug_trap)
 #endif
@@ -6901,6 +6933,8 @@ void pd_quit()
 #ifdef WITH_THREADS
 	screen_update_thread_stop();
 #endif
+	// Cleanup VRAM control window
+	vram_control_deinit();
 	if (mdscr.data) {
 		free((void*)mdscr.data);
 		mdscr.data = NULL;
@@ -6923,4 +6957,121 @@ void pd_quit()
 	}
 	filters_stack_size = 0;
 	SDL_Quit();
+}
+
+/**
+ * Initialize VRAM control window.
+ * @return 0 on success, -1 on failure.
+ */
+static int vram_control_init()
+{
+	if (vram_window.initialized)
+		return 0;
+		
+	// Create a second window for VRAM controls
+	// Note: SDL 1.2 doesn't support multiple windows, so we'll use a separate surface
+	vram_window.surface = SDL_CreateRGBSurface(SDL_SWSURFACE,
+		vram_window.width, vram_window.height, 32,
+		0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000);
+		
+	if (vram_window.surface == NULL) {
+		fprintf(stderr, "vram_control: can't create surface: %s\n", SDL_GetError());
+		return -1;
+	}
+	
+	vram_window.initialized = true;
+	vram_control_draw();
+	
+	return 0;
+}
+
+/**
+ * Cleanup VRAM control window.
+ */
+static void vram_control_deinit()
+{
+	if (vram_window.surface) {
+		SDL_FreeSurface(vram_window.surface);
+		vram_window.surface = NULL;
+	}
+	vram_window.initialized = false;
+}
+
+/**
+ * Draw the VRAM control window.
+ */
+static void vram_control_draw()
+{
+	if (!vram_window.initialized || !vram_window.surface)
+		return;
+		
+	SDL_Surface *surface = vram_window.surface;
+	
+	// Clear background to gray
+	SDL_FillRect(surface, NULL, SDL_MapRGB(surface->format, 128, 128, 128));
+	
+	// Draw plus button (green background)
+	SDL_FillRect(surface, &vram_window.plus_button, 
+		SDL_MapRGB(surface->format, 100, 200, 100));
+		
+	// Draw minus button (red background)  
+	SDL_FillRect(surface, &vram_window.minus_button,
+		SDL_MapRGB(surface->format, 200, 100, 100));
+	
+	// For simplicity, we'll just display the control window as an overlay
+	// on the main screen. In SDL 1.2, true multiple windows aren't supported.
+	if (screen.surface) {
+		SDL_Rect dest_rect;
+		dest_rect.x = screen.surface->w - vram_window.width - 10;
+		dest_rect.y = screen.surface->h - vram_window.height - 10;
+		dest_rect.w = vram_window.width;
+		dest_rect.h = vram_window.height;
+		
+		SDL_BlitSurface(vram_window.surface, NULL, screen.surface, &dest_rect);
+	}
+}
+
+/**
+ * Handle mouse clicks on the VRAM control window.
+ * @param x X coordinate of click.
+ * @param y Y coordinate of click.
+ * @param megad Reference to the Mega Drive emulator instance.
+ */
+static void vram_control_handle_click(int x, int y, md &megad)
+{
+	if (!vram_window.initialized)
+		return;
+		
+	// Convert screen coordinates to VRAM window coordinates
+	int vram_x = x - (screen.surface->w - vram_window.width - 10);
+	int vram_y = y - (screen.surface->h - vram_window.height - 10);
+	
+	// Check if click is within VRAM window bounds
+	if (vram_x < 0 || vram_x >= (int)vram_window.width ||
+		vram_y < 0 || vram_y >= (int)vram_window.height)
+		return;
+	
+	// Check if click is on plus button
+	if (vram_x >= vram_window.plus_button.x &&
+		vram_x < vram_window.plus_button.x + vram_window.plus_button.w &&
+		vram_y >= vram_window.plus_button.y &&
+		vram_y < vram_window.plus_button.y + vram_window.plus_button.h) {
+		
+		// Shift VRAM up
+		megad.vdp.shift_vram_up();
+		pd_message("VRAM shifted up by 1 byte");
+		return;
+	}
+	
+	// Check if click is on minus button
+	if (vram_x >= vram_window.minus_button.x &&
+		vram_x < vram_window.minus_button.x + vram_window.minus_button.w &&
+		vram_y >= vram_window.minus_button.y &&
+		vram_y < vram_window.minus_button.y + vram_window.minus_button.h) {
+		
+		// Shift VRAM down
+		megad.vdp.shift_vram_down();
+		pd_message("VRAM shifted down by 1 byte");
+		return;
+	}
 }

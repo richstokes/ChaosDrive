@@ -428,3 +428,31 @@ void md_vdp::write_reg(uint8_t addr, uint8_t data)
 	// "Writing to a VDP register will clear the code register."
 	rw_mode = 0;
 }
+
+/**
+ * Shift VRAM contents up by one byte.
+ * This moves all data one byte earlier in memory.
+ */
+void md_vdp::shift_vram_up()
+{
+	// Move all bytes one position up (toward lower addresses)
+	for (int i = 0; i < 0xFFFF; i++) {
+		poke_vram(i, vram[i + 1]);
+	}
+	// Clear the last byte
+	poke_vram(0xFFFF, 0);
+}
+
+/**
+ * Shift VRAM contents down by one byte.
+ * This moves all data one byte later in memory.
+ */
+void md_vdp::shift_vram_down()
+{
+	// Move all bytes one position down (toward higher addresses)
+	for (int i = 0xFFFF; i > 0; i--) {
+		poke_vram(i, vram[i - 1]);
+	}
+	// Clear the first byte
+	poke_vram(0, 0);
+}
