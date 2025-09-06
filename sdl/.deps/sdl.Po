@@ -141,10 +141,10 @@ sdl.o: sdl.cpp \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/sys/_types/_wint_t.h \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/assert.h \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/_static_assert.h \
-  /usr/local/include/SDL/SDL.h /usr/local/include/SDL/SDL_main.h \
-  /usr/local/include/SDL/SDL_stdinc.h \
-  /usr/local/include/SDL/SDL_config.h \
-  /usr/local/include/SDL/SDL_platform.h \
+  /opt/homebrew/include/SDL/SDL.h /opt/homebrew/include/SDL/SDL_main.h \
+  /opt/homebrew/include/SDL/SDL_stdinc.h \
+  /opt/homebrew/include/SDL/SDL_config.h \
+  /opt/homebrew/include/SDL/SDL_platform.h \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/AvailabilityMacros.h \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/TargetConditionals.h \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/sys/types.h \
@@ -195,21 +195,27 @@ sdl.o: sdl.cpp \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/__wctype.h \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/___wctype.h \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/_types/_wctype_t.h \
-  /usr/local/include/SDL/begin_code.h \
-  /usr/local/include/SDL/close_code.h /usr/local/include/SDL/SDL_audio.h \
-  /usr/local/include/SDL/SDL_error.h /usr/local/include/SDL/SDL_endian.h \
-  /usr/local/include/SDL/SDL_mutex.h /usr/local/include/SDL/SDL_thread.h \
-  /usr/local/include/SDL/SDL_rwops.h /usr/local/include/SDL/SDL_cdrom.h \
-  /usr/local/include/SDL/SDL_cpuinfo.h \
-  /usr/local/include/SDL/SDL_events.h \
-  /usr/local/include/SDL/SDL_active.h \
-  /usr/local/include/SDL/SDL_keyboard.h \
-  /usr/local/include/SDL/SDL_keysym.h /usr/local/include/SDL/SDL_mouse.h \
-  /usr/local/include/SDL/SDL_video.h \
-  /usr/local/include/SDL/SDL_joystick.h \
-  /usr/local/include/SDL/SDL_quit.h /usr/local/include/SDL/SDL_loadso.h \
-  /usr/local/include/SDL/SDL_timer.h \
-  /usr/local/include/SDL/SDL_version.h ../md.h ../musa/m68k.h \
+  /opt/homebrew/include/SDL/begin_code.h \
+  /opt/homebrew/include/SDL/close_code.h \
+  /opt/homebrew/include/SDL/SDL_audio.h \
+  /opt/homebrew/include/SDL/SDL_error.h \
+  /opt/homebrew/include/SDL/SDL_endian.h \
+  /opt/homebrew/include/SDL/SDL_mutex.h \
+  /opt/homebrew/include/SDL/SDL_thread.h \
+  /opt/homebrew/include/SDL/SDL_rwops.h \
+  /opt/homebrew/include/SDL/SDL_cdrom.h \
+  /opt/homebrew/include/SDL/SDL_cpuinfo.h \
+  /opt/homebrew/include/SDL/SDL_events.h \
+  /opt/homebrew/include/SDL/SDL_active.h \
+  /opt/homebrew/include/SDL/SDL_keyboard.h \
+  /opt/homebrew/include/SDL/SDL_keysym.h \
+  /opt/homebrew/include/SDL/SDL_mouse.h \
+  /opt/homebrew/include/SDL/SDL_video.h \
+  /opt/homebrew/include/SDL/SDL_joystick.h \
+  /opt/homebrew/include/SDL/SDL_quit.h \
+  /opt/homebrew/include/SDL/SDL_loadso.h \
+  /opt/homebrew/include/SDL/SDL_timer.h \
+  /opt/homebrew/include/SDL/SDL_version.h ../md.h ../musa/m68k.h \
   ../musa/m68kconf.h \
   /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/17/include/limits.h \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/limits.h \
@@ -361,11 +367,11 @@ sdl.o: sdl.cpp \
 /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/sys/_types/_wint_t.h:
 /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/assert.h:
 /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/_static_assert.h:
-/usr/local/include/SDL/SDL.h:
-/usr/local/include/SDL/SDL_main.h:
-/usr/local/include/SDL/SDL_stdinc.h:
-/usr/local/include/SDL/SDL_config.h:
-/usr/local/include/SDL/SDL_platform.h:
+/opt/homebrew/include/SDL/SDL.h:
+/opt/homebrew/include/SDL/SDL_main.h:
+/opt/homebrew/include/SDL/SDL_stdinc.h:
+/opt/homebrew/include/SDL/SDL_config.h:
+/opt/homebrew/include/SDL/SDL_platform.h:
 /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/AvailabilityMacros.h:
 /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/TargetConditionals.h:
 /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/sys/types.h:
@@ -416,27 +422,27 @@ sdl.o: sdl.cpp \
 /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/__wctype.h:
 /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/___wctype.h:
 /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/_types/_wctype_t.h:
-/usr/local/include/SDL/begin_code.h:
-/usr/local/include/SDL/close_code.h:
-/usr/local/include/SDL/SDL_audio.h:
-/usr/local/include/SDL/SDL_error.h:
-/usr/local/include/SDL/SDL_endian.h:
-/usr/local/include/SDL/SDL_mutex.h:
-/usr/local/include/SDL/SDL_thread.h:
-/usr/local/include/SDL/SDL_rwops.h:
-/usr/local/include/SDL/SDL_cdrom.h:
-/usr/local/include/SDL/SDL_cpuinfo.h:
-/usr/local/include/SDL/SDL_events.h:
-/usr/local/include/SDL/SDL_active.h:
-/usr/local/include/SDL/SDL_keyboard.h:
-/usr/local/include/SDL/SDL_keysym.h:
-/usr/local/include/SDL/SDL_mouse.h:
-/usr/local/include/SDL/SDL_video.h:
-/usr/local/include/SDL/SDL_joystick.h:
-/usr/local/include/SDL/SDL_quit.h:
-/usr/local/include/SDL/SDL_loadso.h:
-/usr/local/include/SDL/SDL_timer.h:
-/usr/local/include/SDL/SDL_version.h:
+/opt/homebrew/include/SDL/begin_code.h:
+/opt/homebrew/include/SDL/close_code.h:
+/opt/homebrew/include/SDL/SDL_audio.h:
+/opt/homebrew/include/SDL/SDL_error.h:
+/opt/homebrew/include/SDL/SDL_endian.h:
+/opt/homebrew/include/SDL/SDL_mutex.h:
+/opt/homebrew/include/SDL/SDL_thread.h:
+/opt/homebrew/include/SDL/SDL_rwops.h:
+/opt/homebrew/include/SDL/SDL_cdrom.h:
+/opt/homebrew/include/SDL/SDL_cpuinfo.h:
+/opt/homebrew/include/SDL/SDL_events.h:
+/opt/homebrew/include/SDL/SDL_active.h:
+/opt/homebrew/include/SDL/SDL_keyboard.h:
+/opt/homebrew/include/SDL/SDL_keysym.h:
+/opt/homebrew/include/SDL/SDL_mouse.h:
+/opt/homebrew/include/SDL/SDL_video.h:
+/opt/homebrew/include/SDL/SDL_joystick.h:
+/opt/homebrew/include/SDL/SDL_quit.h:
+/opt/homebrew/include/SDL/SDL_loadso.h:
+/opt/homebrew/include/SDL/SDL_timer.h:
+/opt/homebrew/include/SDL/SDL_version.h:
 ../md.h:
 ../musa/m68k.h:
 ../musa/m68kconf.h:
