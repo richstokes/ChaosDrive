@@ -475,13 +475,14 @@ void md_vdp::write_reg(uint8_t addr, uint8_t data)
  */
 void md_vdp::shift_vram_up()
 {
+  fprintf(stderr, "Shifting VRAM up by 1 byte...\n");
   // Move all bytes one position up (toward lower addresses)
   for (int i = 0; i < 0xFFFF; i++)
   {
     poke_vram(i, vram[i + 1]);
   }
   // Clear the last byte
-  poke_vram(0xFFFF, 0);
+  // poke_vram(0xFFFF, 0);
 }
 
 /**
@@ -490,13 +491,14 @@ void md_vdp::shift_vram_up()
  */
 void md_vdp::shift_vram_down()
 {
+  fprintf(stderr, "Shifting VRAM down by 1 byte...\n");
   // Move all bytes one position down (toward higher addresses)
   for (int i = 0xFFFF; i > 0; i--)
   {
     poke_vram(i, vram[i - 1]);
   }
   // Clear the first byte
-  poke_vram(0, 0);
+  // poke_vram(0, 0);
 }
 
 /**
@@ -505,6 +507,7 @@ void md_vdp::shift_vram_down()
 void md_vdp::shift_vram_down_random()
 {
   int shift_amount = rand() % 64; // Get a random number between 0 and 63
+  fprintf(stderr, "Shifting VRAM down by %d bytes...\n", shift_amount);
   // Move all bytes down by the shift amount
   for (int i = 0xFFFF; i > shift_amount; i--)
   {

@@ -552,51 +552,85 @@ void md::corrupt_ym2612_registers()
 {
 	fprintf(stderr, "%s: Corrupting YM2612 registers...\n", __func__);
 
-	// Corrupt FM channel parameters - these have immediate audio effects
+	// Corrupt FM channel parameters more aggressively - target ALL channels
 	for (int channel = 0; channel < 6; channel++)
 	{
-		if (rand() % 2 == 0) // 50% chance per channel
+		int reg_base = (channel < 3) ? 0 : 1; // Bank selection
+		int ch_offset = (channel % 3);
+
+		// Always corrupt frequency registers for maximum chaos
+		// Frequency low byte (registers 0xA0-0xA2 and 0xA4-0xA6)
+		int freq_low_reg = 0xA0 + ch_offset;
+		if (channel >= 3)
+			freq_low_reg = 0xA4 + ch_offset;
+		fm_reg[reg_base][freq_low_reg] = rand() % 256;
+
+		// Frequency high byte (registers 0xA4-0xA6 and 0xA8-0xAA)
+		int freq_high_reg = 0xA4 + ch_offset;
+		if (channel >= 3)
+			freq_high_reg = 0xA8 + ch_offset;
+		fm_reg[reg_base][freq_high_reg] = rand() % 64; // Only lower 6 bits used
+
+		// Aggressively corrupt ALL operator parameters for this channel
+		for (int op = 0; op < 4; op++)
 		{
-			// Corrupt frequency registers (creates pitch glitches)
-			int reg_base = (channel < 3) ? 0 : 1; // Bank selection
-			int ch_offset = (channel % 3);
+			int op_base = (ch_offset * 4) + op;
 
-			// Frequency low byte (registers 0xA0-0xA2 and 0xA4-0xA6)
-			int freq_low_reg = 0xA0 + ch_offset;
-			if (channel >= 3)
-				freq_low_reg = 0xA4 + ch_offset;
-			fm_reg[reg_base][freq_low_reg] = rand() % 256;
+			// Volume/attenuation (registers 0x40-0x4F)
+			fm_reg[reg_base][0x40 + op_base] = rand() % 128;
 
-			// Frequency high byte (registers 0xA4-0xA6 and 0xA8-0xAA)
-			int freq_high_reg = 0xA4 + ch_offset;
-			if (channel >= 3)
-				freq_high_reg = 0xA8 + ch_offset;
-			fm_reg[reg_base][freq_high_reg] = rand() % 64; // Only lower 6 bits used
+			// Rate scaling and attack rate (0x50-0x5F)
+			fm_reg[reg_base][0x50 + op_base] = rand() % 256;
 
-			// Volume/attenuation (registers 0x40-0x4F for operators)
-			for (int op = 0; op < 4; op++)
-			{
-				int vol_reg = 0x40 + (ch_offset * 4) + op;
-				if (rand() % 3 == 0) // 33% chance per operator
-				{
-					fm_reg[reg_base][vol_reg] = rand() % 128; // 7-bit attenuation
-				}
-			}
+			// Amplitude modulation and decay rate (0x60-0x6F)
+			fm_reg[reg_base][0x60 + op_base] = rand() % 256;
+
+			// Sustain rate (0x70-0x7F)
+			fm_reg[reg_base][0x70 + op_base] = rand() % 256;
+
+			// Sustain level and release rate (0x80-0x8F)
+			fm_reg[reg_base][0x80 + op_base] = rand() % 256;
+
+			// SSG-EG (0x90-0x9F)
+			fm_reg[reg_base][0x90 + op_base] = rand() % 16;
 		}
+
+		// Channel-specific parameters
+		// Feedback and algorithm (0xB0-0xB2, 0xB4-0xB6)
+		int fb_alg_reg = 0xB0 + ch_offset;
+		if (channel >= 3)
+			fb_alg_reg = 0xB4 + ch_offset;
+		fm_reg[reg_base][fb_alg_reg] = rand() % 256;
+
+		// Stereo, LFO sensitivity (0xB4-0xB6, 0xB8-0xBA)
+		int stereo_reg = 0xB4 + ch_offset;
+		if (channel >= 3)
+			stereo_reg = 0xB8 + ch_offset;
+		fm_reg[reg_base][stereo_reg] = rand() % 256;
 	}
 
-	// Corrupt global registers occasionally for more dramatic effects
-	if (rand() % 4 == 0) // 25% chance
+	// Corrupt global registers for maximum chaos
+	// LFO register (0x22) - affects all channels
+	fm_reg[0][0x22] = rand() % 256;
+
+	// Timer registers (can affect rhythm and timing)
+	fm_reg[0][0x24] = rand() % 256;
+	fm_reg[0][0x25] = rand() % 256;
+	fm_reg[0][0x26] = rand() % 256;
+	fm_reg[0][0x27] = rand() % 256;
+
+	// DAC enable/disable and data (can cause dramatic volume changes)
+	fm_reg[0][0x2A] = rand() % 256; // DAC data
+	fm_reg[0][0x2B] = rand() % 256; // DAC enable
+
+	// Corrupt more global settings
+	for (int reg = 0x28; reg <= 0x2F; reg++)
 	{
-		// LFO register (0x22)
-		fm_reg[0][0x22] = rand() % 256;
-
-		// Timer registers (can affect rhythm)
-		fm_reg[0][0x24] = rand() % 256;
-		fm_reg[0][0x25] = rand() % 256;
+		if (rand() % 2 == 0) // 50% chance each
+			fm_reg[0][reg] = rand() % 256;
 	}
 
-	fprintf(stderr, "%s: YM2612 register corruption complete.\n", __func__);
+	fprintf(stderr, "%s: YM2612 register corruption complete (aggressive mode).\n", __func__);
 }
 
 /**
