@@ -58,6 +58,13 @@ check_dependencies() {
         missing_deps+=("sdl12-compat")
     fi
     
+    # Also check that the AM_PATH_SDL macro is available for autotools
+    if ! find /opt/homebrew/share/aclocal -name "sdl.m4" >/dev/null 2>&1; then
+        if ! echo "${missing_deps[*]}" | grep -q "sdl12-compat"; then
+            missing_deps+=("sdl12-compat")
+        fi
+    fi
+    
     if [ ${#missing_deps[@]} -gt 0 ]; then
         print_warning "Missing dependencies: ${missing_deps[*]}"
         print_status "Installing missing dependencies..."
