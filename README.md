@@ -19,7 +19,7 @@ Results in a number of weird, wonderful, interesting, insane effects. The softwa
 Installs dependencies via homebrew and then builds the app. More info [here](BUILDING_ON_MACOS.md)  
 
 ## Building - Windows
-TBD
+WIP - for now you should be able to download a [release](https://github.com/richstokes/Megablaster/releases).
 
 ## Building - Linux
 TBD
