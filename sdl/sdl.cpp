@@ -1608,7 +1608,7 @@ retry:
 			0x00, // length of the image ID field
 			0x00, // whether a color map is included
 			0x02  // image type: uncompressed, true-color image
-				 // 5 bytes of color map specification
+				  // 5 bytes of color map specification
 		};
 
 		if (!fwrite(tmp, sizeof(tmp), 1, fp))
@@ -6958,10 +6958,10 @@ next_event:
 			ksym |= KEYSYM_MOD_META;
 
 		// Skip processing keys 7, 8, 9, 0 when used for memory shifting
-		if (events == STARTED && 
-			(event.key.keysym.sym == SDLK_7 || 
-			 event.key.keysym.sym == SDLK_8 || 
-			 event.key.keysym.sym == SDLK_9 || 
+		if (events == STARTED &&
+			(event.key.keysym.sym == SDLK_7 ||
+			 event.key.keysym.sym == SDLK_8 ||
+			 event.key.keysym.sym == SDLK_9 ||
 			 event.key.keysym.sym == SDLK_0))
 		{
 			// These keys are handled by our custom memory shifting code
@@ -7085,7 +7085,7 @@ next_event:
 			ksym = ksym_uni;
 
 		// Skip processing keys 7, 8, 9, 0 when used for memory shifting
-		if (events == STARTED && 
+		if (events == STARTED &&
 			(ksym == SDLK_7 || ksym == SDLK_8 || ksym == SDLK_9 || ksym == SDLK_0))
 		{
 			// These keys are handled by our custom memory shifting code
