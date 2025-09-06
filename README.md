@@ -41,12 +41,7 @@ TBD
 - Key C: Corrupt audio (YM2612) registers
 - Key V: Corrupt audio (SN76496) PSG registers
 
-
-Hold keys for rapid shifting (once per frame)
-You can also use the VRAM control window buttons.
-
-
-* Shifting Z80 memory can actually result in corrupting the audio processor's program counter, stack, and critical variables, which causes it to execute invalid instructions or jump to wrong addresses, freezing the system. Sometimes if you step backward it will recover. Room for improvement here.
+\* Shifting Z80 memory can actually result in corrupting the audio processor's program counter, stack, and critical variables, which causes it to execute invalid instructions or jump to wrong addresses, freezing the system. Sometimes if you step backward it will recover. Room for improvement here.
 
 # Contributing
 PRs welcome. 
