@@ -209,6 +209,10 @@ public:
   void draw_scanline(struct bmap *bits, int line);
   void draw_pixel(struct bmap *bits, int x, int y, uint32_t rgb);
   void write_reg(uint8_t addr, uint8_t data);
+  
+  // VRAM manipulation functions
+  void shift_vram_up();
+  void shift_vram_down();
 };
 
 /* Generic structures for dumping and restoring M68K and Z80 states. */
