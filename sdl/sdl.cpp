@@ -1608,7 +1608,7 @@ retry:
 			0x00, // length of the image ID field
 			0x00, // whether a color map is included
 			0x02  // image type: uncompressed, true-color image
-				  // 5 bytes of color map specification
+				 // 5 bytes of color map specification
 		};
 
 		if (!fwrite(tmp, sizeof(tmp), 1, fp))
@@ -4126,7 +4126,7 @@ int pd_graphics_init(int want_sound, int want_pal, int hz)
 	// Required for text input.
 	SDL_EnableUNICODE(1);
 	// Set the titlebar.
-	SDL_WM_SetCaption("DGen/SDL " VER, "DGen/SDL " VER);
+	SDL_WM_SetCaption("Megablaster9000", "Megablaster9000");
 	// Hide the cursor.
 	SDL_ShowCursor(0);
 	// Initialize screen.
@@ -6778,6 +6778,33 @@ next_event:
 #ifdef WITH_PICO
 		manage_pico_pen(megad);
 #endif
+		// Handle held keys for memory shifting (only during normal gameplay)
+		if (events == STARTED)
+		{
+			// Check for VRAM shift keys (9 = up, 0 = down)
+			if (kpress[SDLK_9 & 0xff])
+			{
+				megad.vdp.shift_vram_up();
+				pd_message("VRAM shifted up by 1 byte");
+			}
+			if (kpress[SDLK_0 & 0xff])
+			{
+				megad.vdp.shift_vram_down();
+				pd_message("VRAM shifted down by 1 byte");
+			}
+
+			// Check for audio memory shift keys (7 = up, 8 = down)
+			if (kpress[SDLK_7 & 0xff])
+			{
+				megad.shift_audio_memory_up();
+				pd_message("Audio memory shifted up by 1 byte");
+			}
+			if (kpress[SDLK_8 & 0xff])
+			{
+				megad.shift_audio_memory_down();
+				pd_message("Audio memory shifted down by 1 byte");
+			}
+		}
 		return 1;
 	}
 	switch (event.type)
@@ -6930,6 +6957,17 @@ next_event:
 		if (event.key.keysym.mod & KMOD_META)
 			ksym |= KEYSYM_MOD_META;
 
+		// Skip processing keys 7, 8, 9, 0 when used for memory shifting
+		if (events == STARTED && 
+			(event.key.keysym.sym == SDLK_7 || 
+			 event.key.keysym.sym == SDLK_8 || 
+			 event.key.keysym.sym == SDLK_9 || 
+			 event.key.keysym.sym == SDLK_0))
+		{
+			// These keys are handled by our custom memory shifting code
+			break;
+		}
+
 		manage_combos(megad, true, RCBK, ksym);
 
 		if (calibrating)
@@ -7045,6 +7083,14 @@ next_event:
 		kpress[(ksym & 0xff)] = 0;
 		if (ksym_uni)
 			ksym = ksym_uni;
+
+		// Skip processing keys 7, 8, 9, 0 when used for memory shifting
+		if (events == STARTED && 
+			(ksym == SDLK_7 || ksym == SDLK_8 || ksym == SDLK_9 || ksym == SDLK_0))
+		{
+			// These keys are handled by our custom memory shifting code
+			break;
+		}
 
 		manage_combos(megad, false, RCBK, ksym);
 		manage_combos(megad, false, RCBK, (ksym | KEYSYM_MOD_ALT));

@@ -479,6 +479,10 @@ int md::export_gst(FILE *hand)
  */
 void md::shift_audio_memory_up()
 {
+	// Check if z80ram is valid
+	if (!z80ram)
+		return;
+
 	// Move all bytes one position up (toward lower addresses)
 	// Z80 RAM is 8KB (0x2000 bytes)
 	for (int i = 0; i < 0x1FFF; i++)
@@ -495,6 +499,10 @@ void md::shift_audio_memory_up()
  */
 void md::shift_audio_memory_down()
 {
+	// Check if z80ram is valid
+	if (!z80ram)
+		return;
+
 	// Move all bytes one position down (toward higher addresses)
 	// Z80 RAM is 8KB (0x2000 bytes)
 	for (int i = 0x1FFF; i > 0; i--)

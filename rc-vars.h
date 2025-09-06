@@ -11,22 +11,23 @@
 // main.cpp defines IS_MAIN_CPP, which means we actually define the variables.
 // Otherwise, we just declare them as externs
 
-struct rc_str {
-	const char *val;
-	char *alloc;
-	struct rc_str *next;
+struct rc_str
+{
+      const char *val;
+      char *alloc;
+      struct rc_str *next;
 };
 
 #ifdef IS_MAIN_CPP
 #define RCVAR(name, def) intptr_t name = def
-#define RCSTR(name, def) struct rc_str name = { def, NULL, NULL }
+#define RCSTR(name, def) struct rc_str name = {def, NULL, NULL}
 #define RCCTL(name, defk, defj, defm) \
-	intptr_t name[RCB_NUM] = { defk, defj, defm }
+      intptr_t name[RCB_NUM] = {defk, defj, defm}
 #else
 #define RCVAR(name, def) extern intptr_t name
 #define RCSTR(name, def) extern struct rc_str name
 #define RCCTL(name, defk, defj, defm) \
-	extern intptr_t name[RCB_NUM]
+      extern intptr_t name[RCB_NUM]
 #endif
 
 RCCTL(pad1_up, PDK_UP, JS_AXIS(0, 1, JS_AXIS_NEGATIVE), 0);
@@ -94,16 +95,16 @@ RCCTL(dgen_debug_enter, '`', 0, 0);
 RCCTL(dgen_volume_inc, '=', 0, 0);
 RCCTL(dgen_volume_dec, '-', 0, 0);
 
-RCCTL(dgen_slot_0, '0', 0, 0);
-RCCTL(dgen_slot_1, '1', 0, 0);
-RCCTL(dgen_slot_2, '2', 0, 0);
-RCCTL(dgen_slot_3, '3', 0, 0);
-RCCTL(dgen_slot_4, '4', 0, 0);
-RCCTL(dgen_slot_5, '5', 0, 0);
-RCCTL(dgen_slot_6, '6', 0, 0);
-RCCTL(dgen_slot_7, '7', 0, 0);
-RCCTL(dgen_slot_8, '8', 0, 0);
-RCCTL(dgen_slot_9, '9', 0, 0);
+RCCTL(dgen_slot_0, 0, 0, 0); // Unbound - no key binding
+RCCTL(dgen_slot_1, 0, 0, 0); // Unbound - no key binding
+RCCTL(dgen_slot_2, 0, 0, 0); // Unbound - no key binding
+RCCTL(dgen_slot_3, 0, 0, 0); // Unbound - no key binding
+RCCTL(dgen_slot_4, 0, 0, 0); // Unbound - no key binding
+RCCTL(dgen_slot_5, 0, 0, 0); // Unbound - no key binding
+RCCTL(dgen_slot_6, 0, 0, 0); // Unbound - no key binding
+RCCTL(dgen_slot_7, 0, 0, 0); // Unbound - no key binding
+RCCTL(dgen_slot_8, 0, 0, 0); // Unbound - no key binding
+RCCTL(dgen_slot_9, 0, 0, 0); // Unbound - no key binding
 RCCTL(dgen_slot_next, PDK_F8, 0, 0);
 RCCTL(dgen_slot_prev, PDK_F7, 0, 0);
 RCCTL(dgen_save, PDK_F2, 0, 0);
