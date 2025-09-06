@@ -61,8 +61,8 @@ dkms.conf
 *.dwo
 
 # Autotools generated files
-.deps/
-autom4te.cache/
+**/.deps/
+**/autom4te.cache/
 Makefile
 Makefile.in
 aclocal.m4
