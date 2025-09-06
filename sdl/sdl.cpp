@@ -230,7 +230,7 @@ static void screen_update_once()
 	}
 #endif
 	// Draw VRAM control window overlay
-	vram_control_draw();
+	// vram_control_draw(); // Disabled as I think keyboard buttons are working better
 	SDL_Flip(screen.surface);
 }
 
