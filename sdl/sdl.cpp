@@ -1608,7 +1608,7 @@ retry:
 			0x00, // length of the image ID field
 			0x00, // whether a color map is included
 			0x02  // image type: uncompressed, true-color image
-				 // 5 bytes of color map specification
+				  // 5 bytes of color map specification
 		};
 
 		if (!fwrite(tmp, sizeof(tmp), 1, fp))
@@ -6806,6 +6806,20 @@ next_event:
 			{
 				megad.shift_audio_memory_down();
 				pd_message("Audio memory shifted down by 1 byte");
+			}
+
+			// Call corrupt_audio_memory when C key is pressed
+			if (kpress[SDLK_c & 0xff])
+			{
+				megad.corrupt_audio_memory();
+				pd_message("Audio memory corrupted");
+			}
+
+			// Call bitcrush_audio_memory when V key is pressed
+			if (kpress[SDLK_v & 0xff])
+			{
+				megad.bitcrush_audio_memory(4); // Clear 2 lower bits for moderate bitcrush effect
+				pd_message("Audio memory bitcrushed");
 			}
 
 			// Call shift_vram_down_random when R key is pressed

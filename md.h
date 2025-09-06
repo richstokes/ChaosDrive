@@ -433,6 +433,8 @@ public:
   // Audio memory (Z80 RAM) manipulation functions
   void shift_audio_memory_up();
   void shift_audio_memory_down();
+  void corrupt_audio_memory();
+  void bitcrush_audio_memory(int bits_to_clear);
 
 private:
 #ifdef WITH_MZ80

@@ -512,3 +512,58 @@ void md::shift_audio_memory_down()
 	// Clear the first byte -- not sure we want this if going for max glitching
 	// z80ram[0] = 0;
 }
+
+/**
+ * Corrupt specific regions of audio memory for glitch effects.
+ * This targets sample data and some variables while preserving critical system state.
+ */
+void md::corrupt_audio_memory()
+{
+	// Check if z80ram is valid
+	if (!z80ram)
+	{
+		fprintf(stderr, "%s: error: z80ram is not initialized.\n", __func__);
+		return;
+	}
+
+	fprintf(stderr, "%s: Corrupting audio memory...\n", __func__);
+
+	// Corrupt entire Z80 RAM more aggressively - this might be riskier but more effective
+	for (int i = 0x100; i < 0x2000; i += 4) // Start from 0x100 to preserve some critical low memory, every 4 bytes
+	{
+		// High chance of corruption for more noticeable effects
+		if (rand() % 3 == 0) // 66% chance per 4-byte block
+		{
+			z80ram[i] ^= (rand() % 256); // XOR with random value
+			// Also corrupt adjacent byte for more dramatic effect
+			if (i + 1 < 0x2000)
+				z80ram[i + 1] ^= (rand() % 256);
+		}
+	}
+
+	fprintf(stderr, "%s: Audio memory corruption complete.\n", __func__);
+}
+
+/**
+ * Bit-crush effect on audio memory - reduces bit depth
+ */
+void md::bitcrush_audio_memory(int bits_to_clear)
+{
+	if (!z80ram || bits_to_clear <= 0 || bits_to_clear >= 8)
+	{
+		fprintf(stderr, "%s: Invalid parameters (bits_to_clear=%d)\n", __func__, bits_to_clear);
+		return;
+	}
+
+	fprintf(stderr, "%s: Applying bitcrush effect (clearing %d bits)...\n", __func__, bits_to_clear);
+
+	uint8_t mask = 0xFF << bits_to_clear; // Create mask to clear lower bits
+
+	// Apply bit crushing to entire Z80 RAM (except first 0x100 bytes)
+	for (int i = 0x100; i < 0x2000; i++)
+	{
+		z80ram[i] &= mask;
+	}
+
+	fprintf(stderr, "%s: Bitcrush effect applied.\n", __func__);
+}
