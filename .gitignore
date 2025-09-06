@@ -5,6 +5,7 @@ conftest.*
 *~
 dgen
 dgen_tobin
+*.exe
 
 # Prerequisites
 *.d
