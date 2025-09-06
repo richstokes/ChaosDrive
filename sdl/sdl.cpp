@@ -1608,7 +1608,7 @@ retry:
 			0x00, // length of the image ID field
 			0x00, // whether a color map is included
 			0x02  // image type: uncompressed, true-color image
-				  // 5 bytes of color map specification
+				 // 5 bytes of color map specification
 		};
 
 		if (!fwrite(tmp, sizeof(tmp), 1, fp))
@@ -6807,6 +6807,13 @@ next_event:
 				megad.shift_audio_memory_down();
 				pd_message("Audio memory shifted down by 1 byte");
 			}
+
+			// Call shift_vram_down_random when R key is pressed
+			if (kpress[SDLK_r & 0xff])
+			{
+				megad.vdp.shift_vram_down_random();
+				pd_message("VRAM shifted down by random amount");
+			}
 		}
 		return 1;
 	}
@@ -7228,9 +7235,9 @@ next_event:
 #ifdef WITH_DEBUGGER
 		if (!debug_trap)
 #endif
-		// Only grab mouse if VRAM control didn't handle the click
-		if (!vram_click_handled)
-			mouse_grab(true);
+			// Only grab mouse if VRAM control didn't handle the click
+			if (!vram_click_handled)
+				mouse_grab(true);
 		pressed = true;
 		goto mouse_button;
 	}
