@@ -435,6 +435,8 @@ public:
   void shift_audio_memory_down();
   void corrupt_audio_memory();
   void bitcrush_audio_memory(int bits_to_clear);
+  void corrupt_ym2612_registers();
+  void corrupt_psg_registers();
 
 private:
 #ifdef WITH_MZ80

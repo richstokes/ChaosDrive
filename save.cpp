@@ -545,6 +545,83 @@ void md::corrupt_audio_memory()
 }
 
 /**
+ * Corrupt YM2612 FM synthesis registers for dramatic audio glitches.
+ * This directly affects the sound chip's parameters for immediate audio corruption.
+ */
+void md::corrupt_ym2612_registers()
+{
+	fprintf(stderr, "%s: Corrupting YM2612 registers...\n", __func__);
+
+	// Corrupt FM channel parameters - these have immediate audio effects
+	for (int channel = 0; channel < 6; channel++)
+	{
+		if (rand() % 2 == 0) // 50% chance per channel
+		{
+			// Corrupt frequency registers (creates pitch glitches)
+			int reg_base = (channel < 3) ? 0 : 1; // Bank selection
+			int ch_offset = (channel % 3);
+
+			// Frequency low byte (registers 0xA0-0xA2 and 0xA4-0xA6)
+			int freq_low_reg = 0xA0 + ch_offset;
+			if (channel >= 3)
+				freq_low_reg = 0xA4 + ch_offset;
+			fm_reg[reg_base][freq_low_reg] = rand() % 256;
+
+			// Frequency high byte (registers 0xA4-0xA6 and 0xA8-0xAA)
+			int freq_high_reg = 0xA4 + ch_offset;
+			if (channel >= 3)
+				freq_high_reg = 0xA8 + ch_offset;
+			fm_reg[reg_base][freq_high_reg] = rand() % 64; // Only lower 6 bits used
+
+			// Volume/attenuation (registers 0x40-0x4F for operators)
+			for (int op = 0; op < 4; op++)
+			{
+				int vol_reg = 0x40 + (ch_offset * 4) + op;
+				if (rand() % 3 == 0) // 33% chance per operator
+				{
+					fm_reg[reg_base][vol_reg] = rand() % 128; // 7-bit attenuation
+				}
+			}
+		}
+	}
+
+	// Corrupt global registers occasionally for more dramatic effects
+	if (rand() % 4 == 0) // 25% chance
+	{
+		// LFO register (0x22)
+		fm_reg[0][0x22] = rand() % 256;
+
+		// Timer registers (can affect rhythm)
+		fm_reg[0][0x24] = rand() % 256;
+		fm_reg[0][0x25] = rand() % 256;
+	}
+
+	fprintf(stderr, "%s: YM2612 register corruption complete.\n", __func__);
+}
+
+/**
+ * Corrupt PSG (SN76496) registers for additional sound glitches.
+ */
+void md::corrupt_psg_registers()
+{
+	fprintf(stderr, "%s: Corrupting PSG registers...\n", __func__);
+
+	// The PSG has 4 channels (3 tone + 1 noise)
+	// Corrupt frequency and volume registers
+	for (int i = 0; i < 8; i++) // 8 registers total
+	{
+		if (rand() % 2 == 0) // 50% chance per register
+		{
+			// Use SN76496Write to send random values to PSG
+			int value = 0x80 | (i << 4) | (rand() % 16); // Command + data format
+			SN76496Write(0, value);
+		}
+	}
+
+	fprintf(stderr, "%s: PSG register corruption complete.\n", __func__);
+}
+
+/**
  * Bit-crush effect on audio memory - reduces bit depth
  */
 void md::bitcrush_audio_memory(int bits_to_clear)
