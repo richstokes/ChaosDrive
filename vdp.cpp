@@ -133,10 +133,10 @@ int md_vdp::poke_cram(int addr, unsigned char d)
   addr &= 0x007f;
  
   // Debug: Show flag state every few CRAM writes
-  static int debug_counter = 0;
-  if (++debug_counter % 50 == 0) {
-    fprintf(stderr, "CRAM poke #%d: flag at %p = %d\n", debug_counter, (void*)&cram_corruption_enabled, (int)cram_corruption_enabled);
-  }
+  // static int debug_counter = 0;
+  // if (++debug_counter % 50 == 0) {
+  //   fprintf(stderr, "CRAM poke #%d: flag at %p = %d\n", debug_counter, (void*)&cram_corruption_enabled, (int)cram_corruption_enabled);
+  // }
   
   if (cram[addr] != d)
   {
