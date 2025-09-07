@@ -12,6 +12,9 @@ Results in a number of weird, wonderful, interesting, insane effects. The softwa
 <p align="center">
     <img src="screenshots/s2.png" alt="Sonic screenshot" width="50%">
 </p>
+<p align="center">
+    <img src="screenshots/s3.png" alt="Sonic screenshot" width="50%">
+</p>
 
 # Build
 ## Building - Mac
