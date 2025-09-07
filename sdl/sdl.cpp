@@ -6784,6 +6784,11 @@ next_event:
 		// Handle held keys for memory shifting (only during normal gameplay)
 		if (events == STARTED)
 		{
+			// Static variables to track previous key states for single-press detection
+			static bool prev_i_key = false;
+			static bool prev_o_key = false;
+			static bool prev_p_key = false;
+			
 			// Check for VRAM shift keys (9 = up, 0 = down)
 			if (kpress[SDLK_9 & 0xff])
 			{
@@ -6796,12 +6801,30 @@ next_event:
 				pd_message("VRAM shifted down by 1 byte");
 			}
 
-			// Randomize CRAM contents when P key pressed
+			// Randomize CRAM contents when P key pressed (able to hold key)
 			if (kpress[SDLK_p & 0xff])
 			{
 				megad.vdp.randomize_cram();
-				pd_message("CRAM contents randomized");
+				pd_message("CRAM randomized");
 			}
+
+			// Enable CRAM Corruption when I key pressed (single press)
+			bool current_i_key = kpress[SDLK_i & 0xff] != 0;
+			if (current_i_key && !prev_i_key)
+			{
+				megad.vdp.enable_cram_corruption();
+				pd_message("CRAM corruption enabled");
+			}
+			prev_i_key = current_i_key;
+
+			// Disable CRAM Corruption when O key pressed (single press)
+			bool current_o_key = kpress[SDLK_o & 0xff] != 0;
+			if (current_o_key && !prev_o_key)
+			{
+				megad.vdp.disable_cram_corruption();
+				pd_message("CRAM corruption disabled");
+			}
+			prev_o_key = current_o_key;
 
 			// Check for audio memory shift keys (7 = up, 8 = down)
 			if (kpress[SDLK_7 & 0xff])

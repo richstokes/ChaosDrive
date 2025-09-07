@@ -37,6 +37,7 @@ void md_vdp::reset()
   sprite_overflow_line = INT_MIN;
   dest = NULL;
   bmap = NULL;
+  cram_corruption_enabled = false;
 }
 
 /**
@@ -52,6 +53,7 @@ md_vdp::md_vdp(md &md) : belongs(md)
   dirt = (mem + 0x10100); // VRAM/CRAM/Reg dirty buffer bitfield
   // Also in 0x34 are global dirt flags (inclduing VSRAM this time)
   Bpp = Bpp_times8 = 0;
+  cram_corruption_enabled = false;
   reset();
 }
 
@@ -127,6 +129,48 @@ int md_vdp::poke_vram(int addr, unsigned char d)
 int md_vdp::poke_cram(int addr, unsigned char d)
 {
   addr &= 0x007f;
+ 
+  // Apply corruption if enabled
+  if (cram_corruption_enabled)
+  {
+    fprintf(stderr, "Corrupting CRAM at address 0x%02X\n", addr);
+    // Make corruption more aggressive and visible
+    int corruption_type = rand() % 6;
+    switch (corruption_type)
+    {
+      case 0:
+        // Multiple bit flips for more dramatic effect
+        d ^= (1 << (rand() % 8));
+        d ^= (1 << (rand() % 8));
+        break;
+      case 1:
+        // Random swap with another CRAM entry
+        {
+          int swap_addr = rand() % 0x80;
+          unsigned char temp = cram[swap_addr];
+          cram[swap_addr] = d;
+          d = temp;
+        }
+        break;
+      case 2:
+        // Add significant noise
+        d += (rand() % 128) - 64;
+        break;
+      case 3:
+        // Completely randomize
+        d = rand() % 256;
+        break;
+      case 4:
+        // Invert colors
+        d = ~d;
+        break;
+      case 5:
+        // Shift all bits
+        d = ((d << 4) | (d >> 4)) & 0xFF;
+        break;
+    }
+  }
+  
   if (cram[addr] != d)
   {
     // Store dirty information down to 1byte level in bits
@@ -537,4 +581,23 @@ void md_vdp::randomize_cram()
   // Mark all CRAM as dirty
   memset(dirt + 0x20, 0xFF, 0x10);
   dirt[0x34] |= 2;
+}
+
+/**
+ * Enable persistent CRAM corruption mode.
+ * When enabled, all CRAM writes will be corrupted in real-time.
+ */
+void md_vdp::enable_cram_corruption()
+{
+  fprintf(stderr, "Enabling persistent CRAM corruption mode...\n");
+  cram_corruption_enabled = true;
+}
+
+/**
+ * Disable persistent CRAM corruption mode.
+ */
+void md_vdp::disable_cram_corruption()
+{
+  fprintf(stderr, "Disabling persistent CRAM corruption mode...\n");
+  cram_corruption_enabled = false;
 }
