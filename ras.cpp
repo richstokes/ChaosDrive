@@ -1115,6 +1115,48 @@ void md_vdp::draw_plane_front1(int line)
 // The main interface function, to generate a scanline
 void md_vdp::draw_scanline(struct bmap *bits, int line)
 {
+  // Apply CRAM corruption every few scanlines if enabled
+  if (cram_corruption_enabled && (line % 4 == 0)) // Corrupt every 4th scanline for performance
+  {
+    // Corrupt a few random CRAM entries
+    for (int i = 0; i < 3; i++) // Corrupt 3 random entries per corruption cycle
+    {
+      int addr = rand() % 0x80;
+      unsigned char original = cram[addr];
+      
+      int corruption_type = rand() % 6;
+      switch (corruption_type)
+      {
+        case 0:
+          cram[addr] ^= (1 << (rand() % 8)); // Bit flip
+          break;
+        case 1:
+          cram[addr] = ~cram[addr]; // Invert
+          break;
+        case 2:
+          cram[addr] += (rand() % 64) - 32; // Add noise
+          break;
+        case 3:
+          cram[addr] = rand() % 256; // Random
+          break;
+        case 4:
+          cram[addr] = ((cram[addr] << 4) | (cram[addr] >> 4)) & 0xFF; // Bit shift
+          break;
+        case 5:
+          // Swap with another random entry
+          {
+            int swap_addr = rand() % 0x80;
+            unsigned char temp = cram[swap_addr];
+            cram[swap_addr] = cram[addr];
+            cram[addr] = temp;
+          }
+          break;
+      }
+    }
+    // Mark CRAM as dirty so changes are visible
+    dirt[0x34] |= 2;
+  }
+
   unsigned *ptr, i;
   // Set the destination in the bmap
   bmap = bits;
