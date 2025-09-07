@@ -229,6 +229,7 @@ public:
   void randomize_cram();
   void enable_cram_corruption();
   void disable_cram_corruption();
+  void sprite_attribute_scramble();
 };
 
 /* Generic structures for dumping and restoring M68K and Z80 states. */
