@@ -8,6 +8,7 @@ dgen_tobin
 *.exe
 stdout.txt
 stderr.txt
+desktop.ini
 
 # Prerequisites
 *.d
