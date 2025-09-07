@@ -64,10 +64,51 @@ int md::myfm_write(int a, int v, int md)
 	fm_reg[sid][(fm_sel[sid])] = v;
 end:
 	if (pass) {
-		YM2612Write(0, a, v);
+		// Apply FM corruption if enabled
+		int corrupted_v = v;
+		if (fm_corruption_enabled && (a & 0x01) == 1) { // Only corrupt data writes, not register selects
+			// Apply different corruption types based on register type
+			uint8_t reg = fm_sel[sid];
+			
+			// Frequency registers (most noticeable corruption)
+			if ((reg >= 0xA0 && reg <= 0xA6) || (reg >= 0xA8 && reg <= 0xAE)) {
+				// Frequency corruption - add random detune
+				corrupted_v = v + ((rand() % 64) - 32); // ±32 range
+				if (corrupted_v < 0) corrupted_v = 0;
+				if (corrupted_v > 255) corrupted_v = 255;
+			}
+			// Volume/attenuation registers (0x40-0x4F)
+			else if (reg >= 0x40 && reg <= 0x4F) {
+				// Volume corruption - random attenuation
+				corrupted_v = rand() % 128; // Random volume level
+			}
+			// Operator parameters (rate scaling, attack, decay, sustain, release)
+			else if ((reg >= 0x50 && reg <= 0x9F)) {
+				// Envelope corruption
+				if (rand() % 3 == 0) { // 33% chance
+					corrupted_v = rand() % 256;
+				}
+			}
+			// Channel parameters (feedback, algorithm, stereo)
+			else if ((reg >= 0xB0 && reg <= 0xBF)) {
+				// Algorithm/feedback corruption
+				if (rand() % 4 == 0) { // 25% chance
+					corrupted_v = rand() % 256;
+				}
+			}
+			// Global registers
+			else if (reg == 0x22 || reg == 0x27 || reg == 0x2A || reg == 0x2B) {
+				// LFO, timers, DAC corruption
+				if (rand() % 5 == 0) { // 20% chance
+					corrupted_v = rand() % 256;
+				}
+			}
+		}
+		
+		YM2612Write(0, a, corrupted_v);
 		if (dgen_mjazz) {
-			YM2612Write(1, a, v);
-			YM2612Write(2, a, v);
+			YM2612Write(1, a, corrupted_v);
+			YM2612Write(2, a, corrupted_v);
 		}
 	}
 	return 0;

@@ -751,6 +751,9 @@ md::md(bool pal, char region):
   reset(); // reset megadrive
 
 	patch_elem = NULL;
+	
+	// Initialize corruption flags
+	fm_corruption_enabled = false;
 
   ok=1;
 

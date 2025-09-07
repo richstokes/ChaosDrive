@@ -6789,6 +6789,8 @@ next_event:
 			static bool prev_o_key = false;
 			static bool prev_p_key = false;
 			static bool prev_u_key = false;
+			static bool prev_e_key = false;
+			static bool prev_w_key = false;
 			
 			// Check for VRAM shift keys (9 = up, 0 = down)
 			if (kpress[SDLK_9 & 0xff])
@@ -6889,6 +6891,24 @@ next_event:
 				pd_message("Sprite attributes scrambled");
 			}
 			prev_u_key = current_u_key;
+
+			// Enable FM Corruption when E key pressed (single press)
+			bool current_e_key = kpress[SDLK_e & 0xff] != 0;
+			if (current_e_key && !prev_e_key)
+			{
+				megad.enable_fm_corruption();
+				pd_message("FM corruption enabled");
+			}
+			prev_e_key = current_e_key;
+
+			// Disable FM Corruption when W key pressed (single press)
+			bool current_w_key = kpress[SDLK_w & 0xff] != 0;
+			if (current_w_key && !prev_w_key)
+			{
+				megad.disable_fm_corruption();
+				pd_message("FM corruption disabled");
+			}
+			prev_w_key = current_w_key;
 		}
 		return 1;
 	}

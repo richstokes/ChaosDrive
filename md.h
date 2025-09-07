@@ -443,6 +443,11 @@ public:
   void corrupt_ym2612_registers();
   void corrupt_psg_registers();
   void detune_fm_registers();
+  
+  // FM corruption flag and control functions
+  bool fm_corruption_enabled;
+  void enable_fm_corruption();
+  void disable_fm_corruption();
 
 private:
 #ifdef WITH_MZ80

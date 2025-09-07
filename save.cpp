@@ -722,3 +722,22 @@ void md::detune_fm_registers()
 
 	fprintf(stderr, "%s: FM register detuning complete.\n", __func__);
 }
+
+/**
+ * Enable persistent FM corruption that affects all FM data writes.
+ */
+void md::enable_fm_corruption()
+{
+	fm_corruption_enabled = true;
+	fprintf(stderr, "%s: FM corruption enabled - all FM writes will be corrupted.\n", __func__);
+}
+
+/**
+ * Disable persistent FM corruption.
+ */
+void md::disable_fm_corruption()
+{
+	fm_corruption_enabled = false;
+	fprintf(stderr, "%s: FM corruption disabled.\n", __func__);
+}
+
