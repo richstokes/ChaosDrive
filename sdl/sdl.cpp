@@ -6874,6 +6874,13 @@ next_event:
 				pd_message("VRAM shifted down by random amount");
 			}
 
+			// Detune FM channels when Q key is pressed (single press)
+			if (kpress[SDLK_q & 0xff])
+			{
+				megad.detune_fm_registers();
+				pd_message("FM channels/registers detuned");
+			}
+
 			// Scramble sprite attributes when U key is pressed (single press)
 			bool current_u_key = kpress[SDLK_u & 0xff] != 0;
 			if (current_u_key && !prev_u_key)

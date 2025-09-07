@@ -678,3 +678,47 @@ void md::bitcrush_audio_memory(int bits_to_clear)
 
 	fprintf(stderr, "%s: Bitcrush effect applied.\n", __func__);
 }
+
+
+/**
+ * Detune FM registers for a more chaotic sound.
+ */
+void md::detune_fm_registers()
+{
+	fprintf(stderr, "%s: Detuning FM registers...\n", __func__);
+
+	// Apply random detuning to all FM channels
+	for (int channel = 0; channel < 6; channel++)
+	{
+		int reg_bank = (channel < 3) ? 0 : 1; // Bank selection (0 for channels 0-2, 1 for channels 3-5)
+		int ch_offset = (channel % 3); // Channel offset within bank
+
+		// Detune frequency registers
+		// Frequency low byte (0xA0-0xA2 for bank 0, 0xA4-0xA6 for bank 1)
+		int freq_low_reg = 0xA0 + ch_offset;
+		if (channel >= 3)
+			freq_low_reg = 0xA4 + ch_offset;
+		
+		// Apply detuning (-32 to +31 for more dramatic effect)
+		int new_freq_low = fm_reg[reg_bank][freq_low_reg] + (rand() % 64) - 32;
+		new_freq_low = (new_freq_low < 0) ? 0 : ((new_freq_low > 255) ? 255 : new_freq_low);
+		
+		// Write to hardware: first select register, then write data
+		myfm_write((reg_bank << 1) | 0, freq_low_reg, 1); // Select register
+		myfm_write((reg_bank << 1) | 1, new_freq_low, 1); // Write data
+		
+		// Also detune the frequency high byte
+		int freq_high_reg = 0xA4 + ch_offset;
+		if (channel >= 3)
+			freq_high_reg = 0xA8 + ch_offset;
+		
+		int new_freq_high = fm_reg[reg_bank][freq_high_reg] + (rand() % 16) - 8;
+		new_freq_high = (new_freq_high < 0) ? 0 : ((new_freq_high > 63) ? 63 : new_freq_high); // High byte only uses 6 bits
+		
+		// Write to hardware
+		myfm_write((reg_bank << 1) | 0, freq_high_reg, 1); // Select register
+		myfm_write((reg_bank << 1) | 1, new_freq_high, 1); // Write data
+	}
+
+	fprintf(stderr, "%s: FM register detuning complete.\n", __func__);
+}
