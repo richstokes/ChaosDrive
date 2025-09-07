@@ -442,6 +442,7 @@ public:
   void bitcrush_audio_memory(int bits_to_clear);
   void corrupt_ym2612_registers();
   void corrupt_psg_registers();
+  void detune_fm_registers();
 
 private:
 #ifdef WITH_MZ80
