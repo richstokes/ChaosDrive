@@ -6874,7 +6874,7 @@ next_event:
 				pd_message("VRAM shifted down by random amount");
 			}
 
-			// Detune FM channels when Q key is pressed (single press)
+			// Detune FM channels when Q key is pressed (can hold key)
 			if (kpress[SDLK_q & 0xff])
 			{
 				megad.detune_fm_registers();
