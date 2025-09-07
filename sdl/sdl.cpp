@@ -6788,6 +6788,7 @@ next_event:
 			static bool prev_i_key = false;
 			static bool prev_o_key = false;
 			static bool prev_p_key = false;
+			static bool prev_u_key = false;
 			
 			// Check for VRAM shift keys (9 = up, 0 = down)
 			if (kpress[SDLK_9 & 0xff])
@@ -6872,6 +6873,15 @@ next_event:
 				megad.vdp.shift_vram_down_random();
 				pd_message("VRAM shifted down by random amount");
 			}
+
+			// Scramble sprite attributes when U key is pressed (single press)
+			bool current_u_key = kpress[SDLK_u & 0xff] != 0;
+			if (current_u_key && !prev_u_key)
+			{
+				megad.vdp.sprite_attribute_scramble();
+				pd_message("Sprite attributes scrambled");
+			}
+			prev_u_key = current_u_key;
 		}
 		return 1;
 	}

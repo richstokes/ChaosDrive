@@ -50,6 +50,7 @@ Drag a ROM file onto the dgen.exe
 - Key P: Randomize CRAM contents (once, hold to repeat)
 - Key I: Toggle persistent CRAM corruption on - causes random color glitches
 - Key O: Toggle persistent CRAM corruption off
+- Key U: Scramble sprite attributes (X, Y, tile index, etc) - causes sprites to jump around, flicker, disappear, etc.
 
 ## Audio Memory Controls
 - Key 7: Shift Z80 audio memory up*
