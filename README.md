@@ -16,10 +16,11 @@ Results in a number of weird, wonderful, interesting, insane effects. The softwa
 # Build
 ## Building - Mac
 `./buildandrun.sh` - A vibe-coded build script that "works on my machine".  
-Installs dependencies via homebrew and then builds the app. More info [here](BUILDING_ON_MACOS.md)  
+Installs dependencies via homebrew and then builds the app. More info [here](BUILDING_ON_MACOS.md).
 
 ## Building - Windows
-WIP - for now you should be able to download a [release](https://github.com/richstokes/Megablaster/releases).
+WIP, but you can try the `./build-windows.ps1` file. More info [here](BUILDING_ON_WINDOWS.md).
+
 
 ## Building - Linux
 TBD
