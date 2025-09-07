@@ -57,6 +57,7 @@ Drag a ROM file onto the dgen.exe
 - Key 8: Shift Z80 audio memory down*
 - Key C: Corrupt audio (YM2612) registers
 - Key V: Corrupt audio (SN76496) PSG registers
+- Key Q: Detune FM channels/registers (music etc will go out of tune)
 
 \* Shifting Z80 memory can actually result in corrupting the audio processor's program counter, stack, and critical variables, which causes it to execute invalid instructions or jump to wrong addresses, freezing the system. Sometimes if you step backward it will recover. Room for improvement here.
 
