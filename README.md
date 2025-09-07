@@ -47,7 +47,9 @@ Drag a ROM file onto the dgen.exe
 - Key 9: Shift VRAM contents up one byte
 - Key 0: Shift VRAM contents down one byte
 - Key R: Randomly corrupt a chunk of VRAM
-- Key P: Randomize CRAM contents (colors)
+- Key P: Randomize CRAM contents (once, hold to repeat)
+- Key I: Toggle persistent CRAM corruption on - causes random color glitches
+- Key O: Toggle persistent CRAM corruption off
 
 ## Audio Memory Controls
 - Key 7: Shift Z80 audio memory up*
