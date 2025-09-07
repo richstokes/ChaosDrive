@@ -19,7 +19,8 @@ Results in a number of weird, wonderful, interesting, insane effects. The softwa
 Installs dependencies via homebrew and then builds the app. More info [here](BUILDING_ON_MACOS.md).
 
 ## Building - Windows
-WIP, but you can try the `./build-windows.ps1` file. More info [here](BUILDING_ON_WINDOWS.md).
+WIP, but you can try the `./build-windows.ps1` file. More info [here](BUILDING_ON_WINDOWS.md).  
+Will also periodically drop pre-built Windows binaries in the [releases](https://github.com/richstokes/Megablaster/releases).
 
 
 ## Building - Linux
