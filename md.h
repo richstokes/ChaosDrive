@@ -146,6 +146,7 @@ public:
   bool vint_pending;
   bool cmd_pending; // set when first half of command arrives
   int sprite_overflow_line;
+  bool cram_corruption_enabled;
 
 private:
   int poke_vram(int addr, unsigned char d);
@@ -226,6 +227,8 @@ public:
   void shift_vram_down();
   void shift_vram_down_random();
   void randomize_cram();
+  void enable_cram_corruption();
+  void disable_cram_corruption();
 };
 
 /* Generic structures for dumping and restoring M68K and Z80 states. */
