@@ -6,6 +6,8 @@ conftest.*
 dgen
 dgen_tobin
 *.exe
+stdout.txt
+stderr.txt
 
 # Prerequisites
 *.d
