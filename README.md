@@ -40,10 +40,11 @@ Drag a ROM file onto the dgen.exe
 - Keys A,S,D: ABC on the controller
 - Arrow keys: D-Pad on the controller
 
-## VRAM Controls
+## Video Controls
 - Key 9: Shift VRAM contents up one byte
 - Key 0: Shift VRAM contents down one byte
 - Key R: Randomly corrupt a chunk of VRAM
+- Key P: Randomize CRAM contents (colors)
 
 ## Audio Memory Controls
 - Key 7: Shift Z80 audio memory up*

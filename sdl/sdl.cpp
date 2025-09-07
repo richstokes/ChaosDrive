@@ -6796,6 +6796,13 @@ next_event:
 				pd_message("VRAM shifted down by 1 byte");
 			}
 
+			// Randomize CRAM contents when P key pressed
+			if (kpress[SDLK_p & 0xff])
+			{
+				megad.vdp.randomize_cram();
+				pd_message("CRAM contents randomized");
+			}
+
 			// Check for audio memory shift keys (7 = up, 8 = down)
 			if (kpress[SDLK_7 & 0xff])
 			{

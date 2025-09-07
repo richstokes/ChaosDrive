@@ -12,6 +12,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
+#include <algorithm>
 #include "md.h"
 
 /** Reset the VDP. */
@@ -518,4 +519,22 @@ void md_vdp::shift_vram_down_random()
   {
     poke_vram(i, 0);
   }
+}
+
+/**
+ * Randomize color entries in CRAM. Produces acid trip color swaps without destroying tile data.
+ */
+void md_vdp::randomize_cram()
+{
+  fprintf(stderr, "Randomizing CRAM...\n");
+  // Randomly swap color entries in CRAM
+  for (int i = 0; i < 0x100; i++)
+  {
+    int j = rand() % 0x100;
+    std::swap(cram[i], cram[j]);
+  }
+
+  // Mark all CRAM as dirty
+  memset(dirt + 0x20, 0xFF, 0x10);
+  dirt[0x34] |= 2;
 }
