@@ -6,14 +6,8 @@ This directory contains automated build scripts for compiling Megablaster/DGen o
 
 ### Option 1: PowerShell Script (Recommended)
 ```powershell
-# Run as Administrator for first-time setup
+# Run as Administrator for first-time setup to install dependencies
 .\build-windows.ps1
-```
-
-### Option 2: Bash Script (for Git Bash/MSYS2 users)
-```bash
-# Run in Git Bash or MSYS2
-./build-windows.sh
 ```
 
 ## Prerequisites
@@ -41,20 +35,6 @@ The scripts will automatically install prerequisites, but you need:
 .\build-windows.ps1 -SkipPrerequisites -CleanBuild
 ```
 
-### Bash Script (`build-windows.sh`)
-```bash
-# Full build with prerequisite installation
-./build-windows.sh
-
-# Skip prerequisite installation
-./build-windows.sh --skip-prereqs
-
-# Clean build
-./build-windows.sh --clean
-
-# Show help
-./build-windows.sh --help
-```
 
 ## What the Scripts Do
 
@@ -79,7 +59,7 @@ After successful compilation, you'll have:
 ## Usage
 
 ```bash
-# Run the emulator with a ROM file
+# Run the emulator with a ROM file (or simply drag and drop a ROM onto dgen.exe)
 ./dgen.exe path/to/your/rom.md
 
 # Show help and options
