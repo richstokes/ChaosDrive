@@ -225,6 +225,7 @@ public:
   void shift_vram_up();
   void shift_vram_down();
   void shift_vram_down_random();
+  void randomize_cram();
 };
 
 /* Generic structures for dumping and restoring M68K and Z80 states. */
