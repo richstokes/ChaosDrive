@@ -145,12 +145,33 @@ if ($CleanBuild) {
             }
         }
     }
+    
+    # Clean previous distribution files
+    if (Test-Path "$PROJECT_DIR\dgen-portable") {
+        Remove-Item -Recurse -Force "$PROJECT_DIR\dgen-portable"
+        Write-Info "Cleaned: dgen-portable directory"
+    }
+    if (Test-Path "$PROJECT_DIR\dgen-windows-portable.zip") {
+        Remove-Item -Force "$PROJECT_DIR\dgen-windows-portable.zip"
+        Write-Info "Cleaned: dgen-windows-portable.zip"
+    }
 }
 
 # Create build directory
 Write-Info "Creating build directory..."
 if (-not (Test-Path $BUILD_DIR)) {
     New-Item -ItemType Directory -Path $BUILD_DIR | Out-Null
+}
+
+# Always clean previous distribution files to ensure fresh build
+Write-Info "Cleaning previous distribution files..."
+if (Test-Path "$PROJECT_DIR\dgen-portable") {
+    Remove-Item -Recurse -Force "$PROJECT_DIR\dgen-portable"
+    Write-Info "Cleaned: dgen-portable directory"
+}
+if (Test-Path "$PROJECT_DIR\dgen-windows-portable.zip") {
+    Remove-Item -Force "$PROJECT_DIR\dgen-windows-portable.zip"
+    Write-Info "Cleaned: dgen-windows-portable.zip"
 }
 
 # Set up environment variables for the build
