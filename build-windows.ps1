@@ -84,14 +84,25 @@ if (-not $SkipPrerequisites) {
     # Update package database
     & $msysBash -l -c "pacman -Sy --noconfirm"
     
-    # Install required packages
+    # Install required packages (including static variants if available)
     $packages = @(
         "mingw-w64-x86_64-toolchain",
         "mingw-w64-x86_64-SDL",
         "mingw-w64-x86_64-pkg-config",
+        "mingw-w64-x86_64-binutils",
         "autotools",
         "make"
     )
+    
+    # Try to install static SDL package if available
+    Write-Info "Checking for static SDL package..."
+    & $msysBash -l -c "pacman -Ss mingw-w64-x86_64-SDL | grep static" 2>&1 | Out-Null
+    if ($LASTEXITCODE -eq 0) {
+        Write-Info "Static SDL package found, adding to install list..."
+        $packages += "mingw-w64-x86_64-SDL-static"
+    } else {
+        Write-Info "No static SDL package found, will use alternative linking approach..."
+    }
     
     foreach ($package in $packages) {
         Write-Info "Installing $package..."
@@ -149,8 +160,20 @@ $env:ACLOCAL_PATH = "$MSYS2_ROOT\mingw64\share\aclocal;$MSYS2_ROOT\usr\share\acl
 
 # Get SDL configuration from pkg-config
 Write-Info "Getting SDL configuration..."
-$sdlCflags = & $msysBash -l -c "export PATH=/mingw64/bin:/usr/bin:`$PATH && pkg-config --cflags sdl"
-$sdlLibs = & $msysBash -l -c "export PATH=/mingw64/bin:/usr/bin:`$PATH && pkg-config --libs sdl"
+
+# Check if static SDL libraries are available
+$staticSdlAvailable = & $msysBash -l -c "export PATH=/mingw64/bin:/usr/bin:`$PATH && test -f /mingw64/lib/libSDL.a && echo 'true' || echo 'false'"
+Write-Info "Static SDL available: $staticSdlAvailable"
+
+if ($staticSdlAvailable -eq "true") {
+    Write-Info "Using static SDL linking approach..."
+    $sdlCflags = & $msysBash -l -c "export PATH=/mingw64/bin:/usr/bin:`$PATH && pkg-config --cflags sdl"
+    $sdlLibs = & $msysBash -l -c "export PATH=/mingw64/bin:/usr/bin:`$PATH && pkg-config --libs --static sdl"
+} else {
+    Write-Info "Using dynamic SDL linking approach (will try to minimize dependencies)..."
+    $sdlCflags = & $msysBash -l -c "export PATH=/mingw64/bin:/usr/bin:`$PATH && pkg-config --cflags sdl"
+    $sdlLibs = & $msysBash -l -c "export PATH=/mingw64/bin:/usr/bin:`$PATH && pkg-config --libs sdl"
+}
 
 if ($LASTEXITCODE -ne 0) {
     Write-Error "Failed to get SDL configuration from pkg-config"
@@ -190,9 +213,16 @@ try {
         Write-Warning "automake failed, but continuing..."
     }
     
-    # Run configure with SDL settings
+    # Run configure with SDL settings and static linking
     Write-Info "Running configure..."
-    $configureCmd = "cd '$($PROJECT_DIR -replace '\\','/')' && export PATH=/mingw64/bin:/usr/bin:`$PATH && export PKG_CONFIG_PATH=/mingw64/lib/pkgconfig:/mingw64/share/pkgconfig && ./configure --disable-dependency-tracking --disable-threads --prefix='$($BUILD_DIR -replace '\\','/')'"
+    
+    if ($staticSdlAvailable -eq "true") {
+        # Full static linking approach
+        $configureCmd = "cd '$($PROJECT_DIR -replace '\\','/')' && export PATH=/mingw64/bin:/usr/bin:`$PATH && export PKG_CONFIG_PATH=/mingw64/lib/pkgconfig:/mingw64/share/pkgconfig && export LDFLAGS='-static-libgcc -static-libstdc++ -Wl,-Bstatic -static' && export CFLAGS='-DSDL_STATIC_LIB' && ./configure --disable-dependency-tracking --disable-threads --disable-shared --enable-static --prefix='$($BUILD_DIR -replace '\\','/')'"
+    } else {
+        # Partial static linking (at least for runtime libraries)
+        $configureCmd = "cd '$($PROJECT_DIR -replace '\\','/')' && export PATH=/mingw64/bin:/usr/bin:`$PATH && export PKG_CONFIG_PATH=/mingw64/lib/pkgconfig:/mingw64/share/pkgconfig && export LDFLAGS='-static-libgcc -static-libstdc++' && ./configure --disable-dependency-tracking --disable-threads --prefix='$($BUILD_DIR -replace '\\','/')'"
+    }
     
     & $msysBash -l -c $configureCmd
     if ($LASTEXITCODE -ne 0) {
@@ -200,9 +230,16 @@ try {
         exit 1
     }
     
-    # Build the project
+    # Build the project with static linking
     Write-Info "Building project..."
-    $buildCmd = "cd '$($PROJECT_DIR -replace '\\','/')' && export PATH=/mingw64/bin:/usr/bin:`$PATH && make"
+    
+    if ($staticSdlAvailable -eq "true") {
+        # Full static linking approach
+        $buildCmd = "cd '$($PROJECT_DIR -replace '\\','/')' && export PATH=/mingw64/bin:/usr/bin:`$PATH && export LDFLAGS='-static-libgcc -static-libstdc++ -Wl,-Bstatic -static' && make LDFLAGS='-static-libgcc -static-libstdc++ -Wl,-Bstatic -static'"
+    } else {
+        # Partial static linking (at least for runtime libraries)
+        $buildCmd = "cd '$($PROJECT_DIR -replace '\\','/')' && export PATH=/mingw64/bin:/usr/bin:`$PATH && export LDFLAGS='-static-libgcc -static-libstdc++' && make LDFLAGS='-static-libgcc -static-libstdc++'"
+    }
     
     & $msysBash -l -c $buildCmd
     if ($LASTEXITCODE -ne 0) {
@@ -210,36 +247,200 @@ try {
         exit 1
     }
     
-    # Copy required DLLs
-    Write-Info "Copying required DLLs..."
-    $dllSources = @(
-        "$MSYS2_ROOT\mingw64\bin\SDL.dll"
-    )
+    # Check if we successfully created a standalone binary
+    Write-Info "Verifying standalone binary..."
     
-    # Check for additional MinGW runtime DLLs that might be needed
-    $runtimeDlls = @(
-        "libgcc_s_seh-1.dll",
-        "libstdc++-6.dll", 
-        "libwinpthread-1.dll"
-    )
-    
-    foreach ($dll in $runtimeDlls) {
-        $dllPath = "$MSYS2_ROOT\mingw64\bin\$dll"
-        if (Test-Path $dllPath) {
-            $dllSources += $dllPath
+    # Test if the executable runs without external DLLs
+    if (Test-Path "$PROJECT_DIR\dgen.exe") {
+        # Check dependencies using objdump or similar
+        Write-Info "Checking binary dependencies..."
+        try {
+            $deps = & $msysBash -l -c "cd '$($PROJECT_DIR -replace '\\','/')' && /mingw64/bin/objdump -p dgen.exe | grep 'DLL Name'"
+            if ($LASTEXITCODE -ne 0) {
+                # Try alternative path
+                $deps = & $msysBash -l -c "cd '$($PROJECT_DIR -replace '\\','/')' && objdump -p dgen.exe | grep 'DLL Name'"
+            }
+            Write-Info "Dependencies found:"
+            if ($deps) {
+                Write-Info $deps
+            } else {
+                Write-Info "No DLL dependencies found (or unable to parse)"
+            }
+            
+            # Check if we still have problematic dependencies
+            if ($deps -match "SDL\.dll|libgcc_s_seh-1\.dll|libstdc\+\+-6\.dll|libwinpthread-1\.dll") {
+                Write-Warning "Static linking was not fully successful. Some dynamic dependencies remain."
+                Write-Info "Attempting to create a standalone package..."
+                
+                # Also try ldd for more detailed dependency info
+                try {
+                    $lddOutput = & $msysBash -l -c "cd '$($PROJECT_DIR -replace '\\','/')' && ldd dgen.exe 2>/dev/null || echo 'ldd not available'"
+                    if ($lddOutput -and $lddOutput -ne "ldd not available") {
+                        Write-Info "Detailed dependencies (ldd):"
+                        Write-Info $lddOutput
+                    }
+                } catch {
+                    Write-Info "Could not run ldd for detailed dependency analysis"
+                }
+                
+                # Create a portable directory structure
+                $portableDir = "$PROJECT_DIR\dgen-portable"
+                if (Test-Path $portableDir) {
+                    Remove-Item -Recurse -Force $portableDir
+                }
+                New-Item -ItemType Directory -Path $portableDir | Out-Null
+                
+                # Copy the main executable
+                Copy-Item "$PROJECT_DIR\dgen.exe" "$portableDir\" -Force
+                if (Test-Path "$PROJECT_DIR\dgen_tobin.exe") {
+                    Copy-Item "$PROJECT_DIR\dgen_tobin.exe" "$portableDir\" -Force
+                }
+                
+                # Copy required DLLs to the portable directory
+                $dllSources = @()
+                
+                # SDL DLL
+                $sdlDll = "$MSYS2_ROOT\mingw64\bin\SDL.dll"
+                if (Test-Path $sdlDll) {
+                    $dllSources += $sdlDll
+                }
+                
+                # Runtime DLLs
+                $runtimeDlls = @(
+                    "libgcc_s_seh-1.dll",
+                    "libstdc++-6.dll", 
+                    "libwinpthread-1.dll"
+                )
+                
+                foreach ($dll in $runtimeDlls) {
+                    $dllPath = "$MSYS2_ROOT\mingw64\bin\$dll"
+                    if (Test-Path $dllPath) {
+                        $dllSources += $dllPath
+                    }
+                }
+                
+                foreach ($dllSource in $dllSources) {
+                    if (Test-Path $dllSource) {
+                        $dllName = Split-Path -Leaf $dllSource
+                        Copy-Item $dllSource "$portableDir\$dllName" -Force
+                        Write-Info "Copied to portable dir: $dllName"
+                    }
+                }
+                
+                # Copy documentation and sample files
+                if (Test-Path "$PROJECT_DIR\sample.dgenrc") {
+                    Copy-Item "$PROJECT_DIR\sample.dgenrc" "$portableDir\" -Force
+                }
+                if (Test-Path "$PROJECT_DIR\README.md") {
+                    Copy-Item "$PROJECT_DIR\README.md" "$portableDir\" -Force
+                }
+                
+                Write-Info "Created portable distribution in: $portableDir"
+                Write-Info "This directory contains all files needed to run the emulator."
+                
+                # Create a zip file for easy distribution
+                $zipName = "dgen-windows-portable.zip"
+                $zipPath = "$PROJECT_DIR\$zipName"
+                
+                # Remove existing zip if it exists
+                if (Test-Path $zipPath) {
+                    Remove-Item $zipPath -Force
+                }
+                
+                try {
+                    Write-Info "Creating distribution zip file..."
+                    Compress-Archive -Path "$portableDir\*" -DestinationPath $zipPath -CompressionLevel Optimal
+                    $zipSize = [math]::Round((Get-Item $zipPath).Length / 1MB, 2)
+                    Write-Info "Created distribution zip: $zipName ($zipSize MB)"
+                    Write-Info "This zip file is ready for GitHub releases or distribution!"
+                } catch {
+                    Write-Warning "Failed to create zip file: $_"
+                    Write-Info "You can manually zip the dgen-portable directory for distribution."
+                }
+            } else {
+                Write-Info "SUCCESS! Binary appears to be standalone (no problematic dynamic dependencies found)."
+            }
+        } catch {
+            Write-Warning "Could not check dependencies. Creating portable distribution as fallback..."
+            
+            # Create a portable directory structure
+            $portableDir = "$PROJECT_DIR\dgen-portable"
+            if (Test-Path $portableDir) {
+                Remove-Item -Recurse -Force $portableDir
+            }
+            New-Item -ItemType Directory -Path $portableDir | Out-Null
+            
+            # Copy the main executable
+            Copy-Item "$PROJECT_DIR\dgen.exe" "$portableDir\" -Force
+            if (Test-Path "$PROJECT_DIR\dgen_tobin.exe") {
+                Copy-Item "$PROJECT_DIR\dgen_tobin.exe" "$portableDir\" -Force
+            }
+            
+            # Copy required DLLs to the portable directory
+            $dllSources = @()
+            
+            # SDL DLL
+            $sdlDll = "$MSYS2_ROOT\mingw64\bin\SDL.dll"
+            if (Test-Path $sdlDll) {
+                $dllSources += $sdlDll
+            }
+            
+            # Runtime DLLs
+            $runtimeDlls = @(
+                "libgcc_s_seh-1.dll",
+                "libstdc++-6.dll", 
+                "libwinpthread-1.dll"
+            )
+            
+            foreach ($dll in $runtimeDlls) {
+                $dllPath = "$MSYS2_ROOT\mingw64\bin\$dll"
+                if (Test-Path $dllPath) {
+                    $dllSources += $dllPath
+                }
+            }
+            
+            foreach ($dllSource in $dllSources) {
+                if (Test-Path $dllSource) {
+                    $dllName = Split-Path -Leaf $dllSource
+                    Copy-Item $dllSource "$portableDir\$dllName" -Force
+                    Write-Info "Copied to portable dir: $dllName"
+                }
+            }
+            
+            # Copy documentation and sample files
+            if (Test-Path "$PROJECT_DIR\sample.dgenrc") {
+                Copy-Item "$PROJECT_DIR\sample.dgenrc" "$portableDir\" -Force
+            }
+            if (Test-Path "$PROJECT_DIR\README.md") {
+                Copy-Item "$PROJECT_DIR\README.md" "$portableDir\" -Force
+            }
+            
+            Write-Info "Created portable distribution in: $portableDir"
+            
+            # Create a zip file for easy distribution
+            $zipName = "dgen-windows-portable.zip"
+            $zipPath = "$PROJECT_DIR\$zipName"
+            
+            # Remove existing zip if it exists
+            if (Test-Path $zipPath) {
+                Remove-Item $zipPath -Force
+            }
+            
+            try {
+                Write-Info "Creating distribution zip file..."
+                Compress-Archive -Path "$portableDir\*" -DestinationPath $zipPath -CompressionLevel Optimal
+                $zipSize = [math]::Round((Get-Item $zipPath).Length / 1MB, 2)
+                Write-Info "Created distribution zip: $zipName ($zipSize MB)"
+                Write-Info "This zip file is ready for GitHub releases or distribution!"
+            } catch {
+                Write-Warning "Failed to create zip file: $_"
+                Write-Info "You can manually zip the dgen-portable directory for distribution."
+            }
         }
+    } else {
+        Write-Warning "dgen.exe not found - build may have failed"
+        exit 1
     }
-    
-    foreach ($dllSource in $dllSources) {
-        if (Test-Path $dllSource) {
-            $dllName = Split-Path -Leaf $dllSource
-            Copy-Item $dllSource "$PROJECT_DIR\$dllName" -Force
-            Write-Info "Copied: $dllName"
-        } else {
-            Write-Warning "DLL not found: $dllSource"
-        }
-    }
-    
     # Test the executable
     Write-Info "Testing executable..."
     if (Test-Path "$PROJECT_DIR\dgen.exe") {
@@ -257,6 +458,21 @@ try {
         Write-Info "SUCCESS! Build completed successfully."
         Write-Info "Executable: $PROJECT_DIR\dgen.exe"
         Write-Info "Utility: $PROJECT_DIR\dgen_tobin.exe"
+        Write-Info ""
+        if (Test-Path "$PROJECT_DIR\dgen-portable") {
+            Write-Info "Portable distribution created in: $PROJECT_DIR\dgen-portable\"
+            Write-Info "This directory contains all files needed to run the emulator standalone."
+            if (Test-Path "$PROJECT_DIR\dgen-windows-portable.zip") {
+                Write-Info "Distribution zip created: $PROJECT_DIR\dgen-windows-portable.zip"
+                Write-Info "This zip file is ready for GitHub releases!"
+            }
+            Write-Info ""
+            Write-Info "To distribute:"
+            Write-Info "  1. Upload dgen-windows-portable.zip to GitHub releases"
+            Write-Info "  2. Or share the entire 'dgen-portable' folder"
+        } else {
+            Write-Info "The executable should now be standalone (or have minimal DLL dependencies)."
+        }
         Write-Info ""
         Write-Info "To run the emulator, use: .\dgen.exe [ROM_FILE]"
         Write-Info "For help, use: .\dgen.exe --help"
