@@ -9,6 +9,9 @@ dgen_tobin
 stdout.txt
 stderr.txt
 desktop.ini
+*.zip
+dgen-portable/*
+
 
 # Prerequisites
 *.d
