@@ -239,6 +239,7 @@ public:
 
   // General chaos
   void program_counter_increment();
+  void random_register_corruption();
 };
 
 /* Generic structures for dumping and restoring M68K and Z80 states. */

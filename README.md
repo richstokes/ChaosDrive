@@ -90,6 +90,7 @@ Drag a ROM file onto the dgen.exe
 - Key J: Randomly corrupt a byte of main (68K) memory
 - Key H: Scramble critical RAM areas
 - Key N: Force-Increment the program counter a random small amount
+- Key M: Corrupt a random register
 
 ## Contributing
 
