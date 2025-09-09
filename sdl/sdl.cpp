@@ -1608,7 +1608,7 @@ retry:
 			0x00, // length of the image ID field
 			0x00, // whether a color map is included
 			0x02  // image type: uncompressed, true-color image
-				  // 5 bytes of color map specification
+				 // 5 bytes of color map specification
 		};
 
 		if (!fwrite(tmp, sizeof(tmp), 1, fp))
@@ -6791,6 +6791,7 @@ next_event:
 			static bool prev_u_key = false;
 			static bool prev_e_key = false;
 			static bool prev_w_key = false;
+			static bool prev_k_key = false;
 
 			// Check for VRAM shift keys (9 = up, 0 = down)
 			if (kpress[SDLK_9 & 0xff])
@@ -6916,6 +6917,15 @@ next_event:
 				megad.vdp.corrupt_vram_one_byte();
 				pd_message("VRAM corrupted (one byte)");
 			}
+
+			// Call scroll_register_fuzzing when K key is pressed (single press)
+			bool current_k_key = kpress[SDLK_k & 0xff] != 0;
+			if (current_k_key && !prev_k_key)
+			{
+				megad.vdp.scroll_register_fuzzing();
+				pd_message("Scroll registers fuzzed");
+			}
+			prev_k_key = current_k_key;
 		}
 		return 1;
 	}

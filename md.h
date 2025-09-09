@@ -231,6 +231,7 @@ public:
   void disable_cram_corruption();
   void sprite_attribute_scramble();
   void corrupt_vram_one_byte();
+  void scroll_register_fuzzing();
 };
 
 /* Generic structures for dumping and restoring M68K and Z80 states. */
