@@ -840,3 +840,50 @@ void md_vdp::program_counter_increment()
 
   fprintf(stderr, "PC corrupted: 0x%08X -> 0x%08X (offset: +%d)\n", current_pc, new_pc, increment);
 }
+
+/**
+ * Corrupt a random register in the 68k CPU state.
+ * This can cause crashes or unpredictable behavior.
+ */
+void md_vdp::random_register_corruption()
+{
+  fprintf(stderr, "Corrupting a random 68k CPU register...\n");
+
+  // Dump current state to ensure we have the latest values
+  belongs.m68k_state_dump();
+
+  // Choose a random data or address register (D0-D7, A0-A7)
+  int reg_type = rand() % 2;  // 0 = data register, 1 = address register
+  int reg_index = rand() % 8; // Register index 0-7
+
+  uint32_t *reg_ptr = nullptr;
+  const char *reg_name = nullptr;
+  static char reg_name_buffer[8]; // Static buffer for register name
+
+  if (reg_type == 0)
+  {
+    // Data register D0-D7
+    reg_ptr = &belongs.m68k_state.d[reg_index];
+    snprintf(reg_name_buffer, sizeof(reg_name_buffer), "D%d", reg_index);
+    reg_name = reg_name_buffer;
+  }
+  else
+  {
+    // Address register A0-A7
+    reg_ptr = &belongs.m68k_state.a[reg_index];
+    snprintf(reg_name_buffer, sizeof(reg_name_buffer), "A%d", reg_index);
+    reg_name = reg_name_buffer;
+  }
+
+  if (reg_ptr)
+  {
+    uint32_t original_value = le2h32(*reg_ptr);
+    uint32_t new_value = rand(); // New random value
+    *reg_ptr = h2le32(new_value);
+
+    // Restore the state to apply changes
+    belongs.m68k_state_restore();
+
+    fprintf(stderr, "Corrupted register %s: 0x%08X -> 0x%08X\n", reg_name, original_value, new_value);
+  }
+}

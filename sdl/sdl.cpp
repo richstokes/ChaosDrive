@@ -1608,7 +1608,7 @@ retry:
 			0x00, // length of the image ID field
 			0x00, // whether a color map is included
 			0x02  // image type: uncompressed, true-color image
-				  // 5 bytes of color map specification
+				 // 5 bytes of color map specification
 		};
 
 		if (!fwrite(tmp, sizeof(tmp), 1, fp))
@@ -6794,6 +6794,7 @@ next_event:
 			static bool prev_k_key = false;
 			static bool prev_j_key = false;
 			static bool prev_n_key = false;
+			static bool prev_m_key = false;
 
 			// Check for VRAM shift keys (9 = up, 0 = down)
 			if (kpress[SDLK_9 & 0xff])
@@ -6958,6 +6959,15 @@ next_event:
 				pd_message("Program counter incremented");
 			}
 			prev_n_key = current_n_key;
+
+			// Call random_register_corruption when M key is pressed (single press)
+			bool current_m_key = kpress[SDLK_m & 0xff] != 0;
+			if (current_m_key && !prev_m_key)
+			{
+				megad.vdp.random_register_corruption();
+				pd_message("Random register corrupted");
+			}
+			prev_m_key = current_m_key;
 		}
 		return 1;
 	}
