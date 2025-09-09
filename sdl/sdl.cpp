@@ -1608,7 +1608,7 @@ retry:
 			0x00, // length of the image ID field
 			0x00, // whether a color map is included
 			0x02  // image type: uncompressed, true-color image
-				 // 5 bytes of color map specification
+				  // 5 bytes of color map specification
 		};
 
 		if (!fwrite(tmp, sizeof(tmp), 1, fp))
@@ -6791,7 +6791,7 @@ next_event:
 			static bool prev_u_key = false;
 			static bool prev_e_key = false;
 			static bool prev_w_key = false;
-			
+
 			// Check for VRAM shift keys (9 = up, 0 = down)
 			if (kpress[SDLK_9 & 0xff])
 			{
@@ -6909,6 +6909,13 @@ next_event:
 				pd_message("FM corruption disabled");
 			}
 			prev_w_key = current_w_key;
+
+			// Call corrupt_vram_one_byte when L key is pressed
+			if (kpress[SDLK_l & 0xff])
+			{
+				megad.vdp.corrupt_vram_one_byte();
+				pd_message("VRAM corrupted (one byte)");
+			}
 		}
 		return 1;
 	}
