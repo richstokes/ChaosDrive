@@ -746,3 +746,18 @@ void md_vdp::corrupt_vram_one_byte()
   poke_vram(addr, new_value);
   fprintf(stderr, "Corrupted VRAM at address 0x%04X: 0x%02X -> 0x%02X\n", addr, original_value, new_value);
 }
+
+/**
+ * Fuzz scroll registers in VDP.
+ * This can cause screen shaking or shifting effects.
+ */
+void md_vdp::scroll_register_fuzzing()
+{
+  // VDP scroll registers are 0, 1 (horizontal) and 2, 3 (vertical)
+  int reg_to_fuzz = (rand() % 4); // Randomly pick one of the four scroll registers
+  unsigned char original_value = reg[reg_to_fuzz];
+  unsigned char fuzz_amount = (rand() % 21) - 10; // Random change between -10 and +10
+  unsigned char new_value = original_value + fuzz_amount;
+  write_reg(reg_to_fuzz, new_value);
+  fprintf(stderr, "Fuzzed scroll register %d: 0x%02X -> 0x%02X\n", reg_to_fuzz, original_value, new_value);
+}
