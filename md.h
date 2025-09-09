@@ -235,6 +235,7 @@ public:
 
   // 68k RAM manipulation functions
   void corrupt_68k_ram_one_byte();
+  void critical_ram_scramble();
 };
 
 /* Generic structures for dumping and restoring M68K and Z80 states. */
