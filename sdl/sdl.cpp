@@ -1608,7 +1608,7 @@ retry:
 			0x00, // length of the image ID field
 			0x00, // whether a color map is included
 			0x02  // image type: uncompressed, true-color image
-				 // 5 bytes of color map specification
+				  // 5 bytes of color map specification
 		};
 
 		if (!fwrite(tmp, sizeof(tmp), 1, fp))
@@ -6793,6 +6793,7 @@ next_event:
 			static bool prev_w_key = false;
 			static bool prev_k_key = false;
 			static bool prev_j_key = false;
+			static bool prev_n_key = false;
 
 			// Check for VRAM shift keys (9 = up, 0 = down)
 			if (kpress[SDLK_9 & 0xff])
@@ -6948,6 +6949,15 @@ next_event:
 				megad.corrupt_dac_data();
 				pd_message("DAC data corrupted");
 			}
+
+			// Call program_counter_increment when N key is pressed (single press)
+			bool current_n_key = kpress[SDLK_n & 0xff] != 0;
+			if (current_n_key && !prev_n_key)
+			{
+				megad.vdp.program_counter_increment();
+				pd_message("Program counter incremented");
+			}
+			prev_n_key = current_n_key;
 		}
 		return 1;
 	}

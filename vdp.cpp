@@ -813,3 +813,30 @@ void md_vdp::critical_ram_scramble()
 
   fprintf(stderr, "Critical RAM scrambling complete! Made %d corruptions.\n", corruptions_made);
 }
+
+/**
+ * Corrupt the 68k processor state to cause unpredictable behavior.
+ * This can cause crashes or unpredictable behavior.
+ */
+void md_vdp::program_counter_increment()
+{
+  fprintf(stderr, "Corrupting 68k processor state...\n");
+
+  // Dump current state to ensure we have the latest values
+  belongs.m68k_state_dump();
+
+  // Get current PC for logging
+  uint32_t current_pc = le2h32(belongs.m68k_state.pc);
+
+  // Corrupt the PC by adding a small random offset (must be even for 68k)
+  uint32_t increment = ((rand() % 16) + 1) * 2; // 2-32 bytes, even numbers only
+  uint32_t new_pc = current_pc + increment;
+
+  // Modify the PC in the state structure
+  belongs.m68k_state.pc = h2le32(new_pc);
+
+  // Restore the state to apply changes
+  belongs.m68k_state_restore();
+
+  fprintf(stderr, "PC corrupted: 0x%08X -> 0x%08X (offset: +%d)\n", current_pc, new_pc, increment);
+}
