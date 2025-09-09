@@ -887,3 +887,20 @@ void md_vdp::random_register_corruption()
     fprintf(stderr, "Corrupted register %s: 0x%08X -> 0x%08X\n", reg_name, original_value, new_value);
   }
 }
+
+/**
+ * Bitwise invert the contents of VRAM.
+ * This can cause severe graphical glitches.
+ * Each byte in VRAM is replaced with its bitwise NOT.
+ */
+void md_vdp::invert_vram_contents()
+{
+  fprintf(stderr, "Inverting VRAM contents...\n");
+  for (int addr = 0; addr < 0x10000; addr++)
+  {
+    unsigned char original_value = vram[addr];
+    unsigned char new_value = ~original_value; // Bitwise NOT
+    poke_vram(addr, new_value);
+  }
+  fprintf(stderr, "VRAM inversion complete!\n");
+}
