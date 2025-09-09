@@ -232,6 +232,7 @@ public:
   void sprite_attribute_scramble();
   void corrupt_vram_one_byte();
   void scroll_register_fuzzing();
+  void invert_vram_contents();
 
   // 68k RAM manipulation functions
   void corrupt_68k_ram_one_byte();
