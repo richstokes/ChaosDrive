@@ -230,6 +230,7 @@ public:
   void enable_cram_corruption();
   void disable_cram_corruption();
   void sprite_attribute_scramble();
+  void corrupt_vram_one_byte();
 };
 
 /* Generic structures for dumping and restoring M68K and Z80 states. */
@@ -443,7 +444,7 @@ public:
   void corrupt_ym2612_registers();
   void corrupt_psg_registers();
   void detune_fm_registers();
-  
+
   // FM corruption flag and control functions
   bool fm_corruption_enabled;
   void enable_fm_corruption();

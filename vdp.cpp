@@ -18,7 +18,7 @@
 /** Reset the VDP. */
 void md_vdp::reset()
 {
-  fprintf(stderr, "VDP RESET CALLED! Flag address: %p, was: %d\n", (void*)&cram_corruption_enabled, (int)cram_corruption_enabled);
+  fprintf(stderr, "VDP RESET CALLED! Flag address: %p, was: %d\n", (void *)&cram_corruption_enabled, (int)cram_corruption_enabled);
   hint_pending = false;
   vint_pending = false;
   cmd_pending = false;
@@ -131,13 +131,13 @@ int md_vdp::poke_vram(int addr, unsigned char d)
 int md_vdp::poke_cram(int addr, unsigned char d)
 {
   addr &= 0x007f;
- 
+
   // Debug: Show flag state every few CRAM writes
   // static int debug_counter = 0;
   // if (++debug_counter % 50 == 0) {
   //   fprintf(stderr, "CRAM poke #%d: flag at %p = %d\n", debug_counter, (void*)&cram_corruption_enabled, (int)cram_corruption_enabled);
   // }
-  
+
   if (cram[addr] != d)
   {
     // Store dirty information down to 1byte level in bits
@@ -557,7 +557,7 @@ void md_vdp::randomize_cram()
 void md_vdp::enable_cram_corruption()
 {
   fprintf(stderr, "Enabling persistent CRAM corruption mode...\n");
-  fprintf(stderr, "Flag address: %p, current value: %d\n", (void*)&cram_corruption_enabled, (int)cram_corruption_enabled);
+  fprintf(stderr, "Flag address: %p, current value: %d\n", (void *)&cram_corruption_enabled, (int)cram_corruption_enabled);
   cram_corruption_enabled = true;
   fprintf(stderr, "Flag set to: %d\n", (int)cram_corruption_enabled);
   // Mark all CRAM as dirty so changes are visible
@@ -571,7 +571,7 @@ void md_vdp::enable_cram_corruption()
 void md_vdp::disable_cram_corruption()
 {
   fprintf(stderr, "Disabling persistent CRAM corruption mode...\n");
-  fprintf(stderr, "Flag address: %p, current value: %d\n", (void*)&cram_corruption_enabled, (int)cram_corruption_enabled);
+  fprintf(stderr, "Flag address: %p, current value: %d\n", (void *)&cram_corruption_enabled, (int)cram_corruption_enabled);
   cram_corruption_enabled = false;
   fprintf(stderr, "Flag set to: %d\n", (int)cram_corruption_enabled);
 }
@@ -583,150 +583,166 @@ void md_vdp::disable_cram_corruption()
 void md_vdp::sprite_attribute_scramble()
 {
   fprintf(stderr, "AGGRESSIVELY scrambling sprite attribute table...\n");
-  
+
   // Get sprite attribute table base address from VDP register 5
   // Bits 15-9 of reg[5] contain the base address (in units of $200)
   int sprite_table_base = (reg[5] & 0x7F) << 9;
-  
+
   // Genesis supports up to 80 sprites, each sprite entry is 8 bytes
   int max_sprites = 80;
   int sprite_entry_size = 8;
-  
+
   fprintf(stderr, "Sprite table base: 0x%04X\n", sprite_table_base);
 
   // Apply MUCH more aggressive scrambling - target 80 out of 80 sprites!
-  for (int i = 0; i < 80; i++) 
+  for (int i = 0; i < 80; i++)
   {
     int sprite_index = rand() % max_sprites;
     int sprite_addr = sprite_table_base + (sprite_index * sprite_entry_size);
-    
+
     int scramble_type = rand() % 10; // More scramble types
     switch (scramble_type)
     {
-      case 0:
-        // AGGRESSIVELY scramble Y position - make sprites fly all over
+    case 0:
+      // AGGRESSIVELY scramble Y position - make sprites fly all over
+      {
+        int y_pos = rand() % 1024 - 256; // Allow negative positions too
+        poke_vram(sprite_addr + 0, (y_pos >> 8) & 0xFF);
+        poke_vram(sprite_addr + 1, y_pos & 0xFF);
+      }
+      break;
+
+    case 1:
+      // AGGRESSIVELY scramble sprite size - create huge or tiny sprites
+      {
+        unsigned char size_byte = rand() % 256;
+        // Force extreme sizes more often
+        if (rand() % 3 == 0)
         {
-          int y_pos = rand() % 1024 - 256; // Allow negative positions too
-          poke_vram(sprite_addr + 0, (y_pos >> 8) & 0xFF);
-          poke_vram(sprite_addr + 1, y_pos & 0xFF);
+          size_byte = 0xFF; // Maximum size
         }
-        break;
-        
-      case 1:
-        // AGGRESSIVELY scramble sprite size - create huge or tiny sprites
+        poke_vram(sprite_addr + 2, size_byte);
+
+        // Also scramble the link field to break sprite chains
+        poke_vram(sprite_addr + 3, rand() % 256);
+      }
+      break;
+
+    case 2:
+      // MASSIVELY scramble tile pattern and attributes
+      {
+        // Completely randomize both bytes
+        poke_vram(sprite_addr + 4, rand() % 256);
+        poke_vram(sprite_addr + 5, rand() % 256);
+      }
+      break;
+
+    case 3:
+      // AGGRESSIVELY scramble X position
+      {
+        int x_pos = rand() % 1024 - 256; // Allow off-screen positions
+        poke_vram(sprite_addr + 6, (x_pos >> 8) & 0xFF);
+        poke_vram(sprite_addr + 7, x_pos & 0xFF);
+      }
+      break;
+
+    case 4:
+      // Swap MULTIPLE sprite entries at once (create chaos)
+      {
+        for (int swap_count = 0; swap_count < 5; swap_count++)
         {
-          unsigned char size_byte = rand() % 256;
-          // Force extreme sizes more often
-          if (rand() % 3 == 0) {
-            size_byte = 0xFF; // Maximum size
-          }
-          poke_vram(sprite_addr + 2, size_byte);
-          
-          // Also scramble the link field to break sprite chains
-          poke_vram(sprite_addr + 3, rand() % 256);
-        }
-        break;
-        
-      case 2:
-        // MASSIVELY scramble tile pattern and attributes
-        {
-          // Completely randomize both bytes
-          poke_vram(sprite_addr + 4, rand() % 256);
-          poke_vram(sprite_addr + 5, rand() % 256);
-        }
-        break;
-        
-      case 3:
-        // AGGRESSIVELY scramble X position
-        {
-          int x_pos = rand() % 1024 - 256; // Allow off-screen positions
-          poke_vram(sprite_addr + 6, (x_pos >> 8) & 0xFF);
-          poke_vram(sprite_addr + 7, x_pos & 0xFF);
-        }
-        break;
-        
-      case 4:
-        // Swap MULTIPLE sprite entries at once (create chaos)
-        {
-          for (int swap_count = 0; swap_count < 5; swap_count++) {
-            int sprite2_index = rand() % max_sprites;
-            int sprite2_addr = sprite_table_base + (sprite2_index * sprite_entry_size);
-            
-            for (int byte_offset = 0; byte_offset < sprite_entry_size; byte_offset++)
-            {
-              unsigned char temp = vram[sprite_addr + byte_offset];
-              poke_vram(sprite_addr + byte_offset, vram[sprite2_addr + byte_offset]);
-              poke_vram(sprite2_addr + byte_offset, temp);
-            }
-          }
-        }
-        break;
-        
-      case 5:
-        // COMPLETELY randomize the entire sprite entry
-        {
+          int sprite2_index = rand() % max_sprites;
+          int sprite2_addr = sprite_table_base + (sprite2_index * sprite_entry_size);
+
           for (int byte_offset = 0; byte_offset < sprite_entry_size; byte_offset++)
           {
-            poke_vram(sprite_addr + byte_offset, rand() % 256);
+            unsigned char temp = vram[sprite_addr + byte_offset];
+            poke_vram(sprite_addr + byte_offset, vram[sprite2_addr + byte_offset]);
+            poke_vram(sprite2_addr + byte_offset, temp);
           }
         }
-        break;
-        
-      case 6:
-        // Create "ghost sprites" by setting positions to 0
+      }
+      break;
+
+    case 5:
+      // COMPLETELY randomize the entire sprite entry
+      {
+        for (int byte_offset = 0; byte_offset < sprite_entry_size; byte_offset++)
         {
-          poke_vram(sprite_addr + 0, 0); // Y = 0
-          poke_vram(sprite_addr + 1, 0);
-          poke_vram(sprite_addr + 6, 0); // X = 0
-          poke_vram(sprite_addr + 7, 0);
+          poke_vram(sprite_addr + byte_offset, rand() % 256);
         }
-        break;
-        
-      case 7:
-        // Force sprites to maximum size and random positions
-        {
-          poke_vram(sprite_addr + 2, 0xFF); // Max size
-          poke_vram(sprite_addr + 0, rand() % 256); // Random Y
-          poke_vram(sprite_addr + 1, rand() % 256);
-          poke_vram(sprite_addr + 6, rand() % 256); // Random X
-          poke_vram(sprite_addr + 7, rand() % 256);
-        }
-        break;
-        
-      case 8:
-        // Break sprite chains by corrupting link fields
-        {
-          poke_vram(sprite_addr + 3, rand() % 256); // Random link
-          // Also corrupt the size/link byte
-          poke_vram(sprite_addr + 2, rand() % 256);
-        }
-        break;
-        
-      case 9:
-        // Create "stretchy" sprites by manipulating tile patterns
-        {
-          // Set weird tile patterns that might stretch
-          unsigned short weird_pattern = rand() % 0xFFFF;
-          poke_vram(sprite_addr + 4, (weird_pattern >> 8) & 0xFF);
-          poke_vram(sprite_addr + 5, weird_pattern & 0xFF);
-          
-          // Also set maximum size
-          poke_vram(sprite_addr + 2, 0xFF);
-        }
-        break;
+      }
+      break;
+
+    case 6:
+      // Create "ghost sprites" by setting positions to 0
+      {
+        poke_vram(sprite_addr + 0, 0); // Y = 0
+        poke_vram(sprite_addr + 1, 0);
+        poke_vram(sprite_addr + 6, 0); // X = 0
+        poke_vram(sprite_addr + 7, 0);
+      }
+      break;
+
+    case 7:
+      // Force sprites to maximum size and random positions
+      {
+        poke_vram(sprite_addr + 2, 0xFF);         // Max size
+        poke_vram(sprite_addr + 0, rand() % 256); // Random Y
+        poke_vram(sprite_addr + 1, rand() % 256);
+        poke_vram(sprite_addr + 6, rand() % 256); // Random X
+        poke_vram(sprite_addr + 7, rand() % 256);
+      }
+      break;
+
+    case 8:
+      // Break sprite chains by corrupting link fields
+      {
+        poke_vram(sprite_addr + 3, rand() % 256); // Random link
+        // Also corrupt the size/link byte
+        poke_vram(sprite_addr + 2, rand() % 256);
+      }
+      break;
+
+    case 9:
+      // Create "stretchy" sprites by manipulating tile patterns
+      {
+        // Set weird tile patterns that might stretch
+        unsigned short weird_pattern = rand() % 0xFFFF;
+        poke_vram(sprite_addr + 4, (weird_pattern >> 8) & 0xFF);
+        poke_vram(sprite_addr + 5, weird_pattern & 0xFF);
+
+        // Also set maximum size
+        poke_vram(sprite_addr + 2, 0xFF);
+      }
+      break;
     }
   }
-  
+
   // ALSO corrupt the sprite table location register itself sometimes!
-  if (rand() % 10 == 0) {
+  if (rand() % 10 == 0)
+  {
     unsigned char new_sprite_base = rand() % 128;
     write_reg(5, (reg[5] & 0x80) | new_sprite_base); // Keep bit 7, scramble bits 6-0
     fprintf(stderr, "Also scrambled sprite table base register!\n");
   }
-  
+
   // Mark ALL of VRAM as dirty for maximum effect
   memset(dirt + 0x00, 0xFF, 0x20);
   dirt[0x34] |= 1;
-  
+
   fprintf(stderr, "Aggressive sprite scrambling complete!\n");
+}
+
+/**
+ * Corrupt a single random byte in VRAM.
+ * This can cause minor graphical glitches.
+ */
+void md_vdp::corrupt_vram_one_byte()
+{
+  int addr = rand() % 0x10000; // Random address in VRAM
+  unsigned char original_value = vram[addr];
+  unsigned char new_value = rand() % 256; // New random byte value
+  poke_vram(addr, new_value);
+  fprintf(stderr, "Corrupted VRAM at address 0x%04X: 0x%02X -> 0x%02X\n", addr, original_value, new_value);
 }
