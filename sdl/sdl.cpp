@@ -1608,7 +1608,7 @@ retry:
 			0x00, // length of the image ID field
 			0x00, // whether a color map is included
 			0x02  // image type: uncompressed, true-color image
-				 // 5 bytes of color map specification
+				  // 5 bytes of color map specification
 		};
 
 		if (!fwrite(tmp, sizeof(tmp), 1, fp))
@@ -6933,6 +6933,13 @@ next_event:
 			{
 				megad.vdp.corrupt_68k_ram_one_byte();
 				pd_message("68k RAM corrupted (one byte)");
+			}
+
+			// Call critical_ram_scramble when H key is pressed (can hold to repeat)
+			if (kpress[SDLK_h & 0xff])
+			{
+				megad.vdp.critical_ram_scramble();
+				pd_message("Critical RAM scrambled D:!");
 			}
 		}
 		return 1;

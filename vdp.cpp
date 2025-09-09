@@ -774,3 +774,42 @@ void md_vdp::corrupt_68k_ram_one_byte()
   belongs.misc_writebyte(addr, new_value);
   fprintf(stderr, "Corrupted 68k RAM at address 0x%05X: 0x%02X -> 0x%02X\n", addr, original_value, new_value);
 }
+
+/**
+ * Scramble critical areas of 68k RAM that might affect system stability.
+ * This can cause crashes or unpredictable behavior.
+ */
+void md_vdp::critical_ram_scramble()
+{
+  fprintf(stderr, "Scrambling critical 68k RAM areas...\n");
+
+  // Target the top of RAM where stack and critical variables are likely stored
+  // Stack typically grows down from 0xFFFFFF
+  int corruptions_made = 0;
+
+  // Corrupt random bytes in the upper RAM area (likely stack space)
+  for (int i = 0; i < 32; i++)
+  {
+    int addr = 0xFF8000 + (rand() % 0x8000); // Upper 32KB of RAM
+    unsigned char original_value = belongs.misc_readbyte(addr);
+    unsigned char new_value = rand() % 256;
+    belongs.misc_writebyte(addr, new_value);
+    fprintf(stderr, "Corrupted critical RAM at 0x%05X: 0x%02X -> 0x%02X\n",
+            addr, original_value, new_value);
+    corruptions_made++;
+  }
+
+  // Also corrupt some bytes at the very beginning of RAM (might contain variables)
+  for (int i = 0; i < 16; i++)
+  {
+    int addr = 0xFF0000 + (rand() % 0x1000); // First 4KB of RAM
+    unsigned char original_value = belongs.misc_readbyte(addr);
+    unsigned char new_value = rand() % 256;
+    belongs.misc_writebyte(addr, new_value);
+    fprintf(stderr, "Corrupted low RAM at 0x%05X: 0x%02X -> 0x%02X\n",
+            addr, original_value, new_value);
+    corruptions_made++;
+  }
+
+  fprintf(stderr, "Critical RAM scrambling complete! Made %d corruptions.\n", corruptions_made);
+}

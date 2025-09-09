@@ -20,6 +20,9 @@ Results in a number of weird, wonderful, interesting, insane effects. The softwa
 <p align="center">
     <img src="screenshots/s4.png" alt="Sonic screenshot" width="50%">
 </p>
+<p align="center">
+    <img src="screenshots/s5.png" alt="Sonic screenshot" width="50%">
+</p>
 
 ## Build
 
@@ -81,7 +84,10 @@ Drag a ROM file onto the dgen.exe
 
 ### General Mayhem
 
-- Key J: Randomly corrupt a byte of main (68K) memory. Will likely result in crashes!
+> Will likely result in crashes!
+
+- Key J: Randomly corrupt a byte of main (68K) memory
+- Key H: Scramble critical RAM areas
 
 ## Contributing
 
