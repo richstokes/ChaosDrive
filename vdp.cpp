@@ -606,6 +606,7 @@ void md_vdp::sprite_attribute_scramble()
     case 0:
       // AGGRESSIVELY scramble Y position - make sprites fly all over
       {
+        fprintf(stderr, "  Effect: Scrambling Y position for sprite %d\n", sprite_index);
         int y_pos = rand() % 1024 - 256; // Allow negative positions too
         poke_vram(sprite_addr + 0, (y_pos >> 8) & 0xFF);
         poke_vram(sprite_addr + 1, y_pos & 0xFF);
@@ -615,6 +616,7 @@ void md_vdp::sprite_attribute_scramble()
     case 1:
       // AGGRESSIVELY scramble sprite size - create huge or tiny sprites
       {
+        fprintf(stderr, "  Effect: Scrambling sprite size for sprite %d\n", sprite_index);
         unsigned char size_byte = rand() % 256;
         // Force extreme sizes more often
         if (rand() % 3 == 0)
@@ -631,6 +633,7 @@ void md_vdp::sprite_attribute_scramble()
     case 2:
       // MASSIVELY scramble tile pattern and attributes
       {
+        fprintf(stderr, "  Effect: Scrambling tile pattern for sprite %d\n", sprite_index);
         // Completely randomize both bytes
         poke_vram(sprite_addr + 4, rand() % 256);
         poke_vram(sprite_addr + 5, rand() % 256);
@@ -640,6 +643,7 @@ void md_vdp::sprite_attribute_scramble()
     case 3:
       // AGGRESSIVELY scramble X position
       {
+        fprintf(stderr, "  Effect: Scrambling X position for sprite %d\n", sprite_index);
         int x_pos = rand() % 1024 - 256; // Allow off-screen positions
         poke_vram(sprite_addr + 6, (x_pos >> 8) & 0xFF);
         poke_vram(sprite_addr + 7, x_pos & 0xFF);
@@ -649,6 +653,7 @@ void md_vdp::sprite_attribute_scramble()
     case 4:
       // Swap MULTIPLE sprite entries at once (create chaos)
       {
+        fprintf(stderr, "  Effect: Swapping multiple sprite entries for sprite %d\n", sprite_index);
         for (int swap_count = 0; swap_count < 5; swap_count++)
         {
           int sprite2_index = rand() % max_sprites;
@@ -667,6 +672,7 @@ void md_vdp::sprite_attribute_scramble()
     case 5:
       // COMPLETELY randomize the entire sprite entry
       {
+        fprintf(stderr, "  Effect: Completely randomizing sprite %d\n", sprite_index);
         for (int byte_offset = 0; byte_offset < sprite_entry_size; byte_offset++)
         {
           poke_vram(sprite_addr + byte_offset, rand() % 256);
@@ -677,6 +683,7 @@ void md_vdp::sprite_attribute_scramble()
     case 6:
       // Create "ghost sprites" by setting positions to 0
       {
+        fprintf(stderr, "  Effect: Creating ghost sprite %d (position = 0)\n", sprite_index);
         poke_vram(sprite_addr + 0, 0); // Y = 0
         poke_vram(sprite_addr + 1, 0);
         poke_vram(sprite_addr + 6, 0); // X = 0
@@ -687,6 +694,7 @@ void md_vdp::sprite_attribute_scramble()
     case 7:
       // Force sprites to maximum size and random positions
       {
+        fprintf(stderr, "  Effect: Creating giant sprite %d (max size + random position)\n", sprite_index);
         poke_vram(sprite_addr + 2, 0xFF);         // Max size
         poke_vram(sprite_addr + 0, rand() % 256); // Random Y
         poke_vram(sprite_addr + 1, rand() % 256);
@@ -698,6 +706,7 @@ void md_vdp::sprite_attribute_scramble()
     case 8:
       // Break sprite chains by corrupting link fields
       {
+        fprintf(stderr, "  Effect: Breaking sprite chains for sprite %d\n", sprite_index);
         poke_vram(sprite_addr + 3, rand() % 256); // Random link
         // Also corrupt the size/link byte
         poke_vram(sprite_addr + 2, rand() % 256);
@@ -707,6 +716,7 @@ void md_vdp::sprite_attribute_scramble()
     case 9:
       // Create "stretchy" sprites by manipulating tile patterns
       {
+        fprintf(stderr, "  Effect: Creating stretchy sprite %d (weird tile patterns)\n", sprite_index);
         // Set weird tile patterns that might stretch
         unsigned short weird_pattern = rand() % 0xFFFF;
         poke_vram(sprite_addr + 4, (weird_pattern >> 8) & 0xFF);
