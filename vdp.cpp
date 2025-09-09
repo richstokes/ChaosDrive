@@ -582,7 +582,7 @@ void md_vdp::disable_cram_corruption()
  */
 void md_vdp::sprite_attribute_scramble()
 {
-  fprintf(stderr, "AGGRESSIVELY scrambling sprite attribute table...\n");
+  fprintf(stderr, "INTELLIGENTLY scrambling sprite attribute table...\n");
 
   // Get sprite attribute table base address from VDP register 5
   // Bits 15-9 of reg[5] contain the base address (in units of $200)
@@ -594,11 +594,60 @@ void md_vdp::sprite_attribute_scramble()
 
   fprintf(stderr, "Sprite table base: 0x%04X\n", sprite_table_base);
 
-  // Apply MUCH more aggressive scrambling - target 80 out of 80 sprites!
-  for (int i = 0; i < 80; i++)
+  // First, scan the sprite table to find sprites that actually exist
+  // A sprite exists if it has valid positioning data (not all zeros)
+  int active_sprites[80];
+  int active_sprite_count = 0;
+
+  for (int i = 0; i < max_sprites; i++)
   {
-    int sprite_index = rand() % max_sprites;
+    int sprite_addr = sprite_table_base + (i * sprite_entry_size);
+
+    // Read sprite attributes
+    unsigned char y_high = vram[sprite_addr + 0];
+    unsigned char y_low = vram[sprite_addr + 1];
+    unsigned char size_link = vram[sprite_addr + 2];
+    unsigned char pattern_high = vram[sprite_addr + 4];
+    unsigned char pattern_low = vram[sprite_addr + 5];
+    unsigned char x_high = vram[sprite_addr + 6];
+    unsigned char x_low = vram[sprite_addr + 7];
+
+    // Check if this sprite appears to be active (has non-zero data or reasonable coordinates)
+    bool has_position = (y_high != 0 || y_low != 0 || x_high != 0 || x_low != 0);
+    bool has_pattern = (pattern_high != 0 || pattern_low != 0);
+    bool reasonable_y = (y_high < 8); // Y position should be reasonable (< 2048)
+
+    if ((has_position || has_pattern) && reasonable_y)
+    {
+      active_sprites[active_sprite_count] = i;
+      active_sprite_count++;
+    }
+  }
+
+  fprintf(stderr, "Found %d active sprites out of %d total\n", active_sprite_count, max_sprites);
+
+  if (active_sprite_count == 0)
+  {
+    fprintf(stderr, "No active sprites found! Creating chaos with first few sprites anyway...\n");
+    // If no sprites are found, target the first 5 sprites anyway
+    for (int i = 0; i < 5; i++)
+    {
+      active_sprites[i] = i;
+    }
+    active_sprite_count = 5;
+  }
+
+  // Now apply effects to a random selection of active sprites
+  int effects_to_apply = (active_sprite_count < 10) ? active_sprite_count : (rand() % 10) + 1;
+
+  for (int effect_num = 0; effect_num < effects_to_apply; effect_num++)
+  {
+    // Pick a random active sprite
+    int sprite_index = active_sprites[rand() % active_sprite_count];
     int sprite_addr = sprite_table_base + (sprite_index * sprite_entry_size);
+
+    fprintf(stderr, "Applying effect %d/%d to active sprite %d at address 0x%04X\n",
+            effect_num + 1, effects_to_apply, sprite_index, sprite_addr);
 
     int scramble_type = rand() % 10; // More scramble types
     switch (scramble_type)
@@ -651,19 +700,28 @@ void md_vdp::sprite_attribute_scramble()
       break;
 
     case 4:
-      // Swap MULTIPLE sprite entries at once (create chaos)
+      // Swap with another active sprite (create chaos)
       {
-        fprintf(stderr, "  Effect: Swapping multiple sprite entries for sprite %d\n", sprite_index);
-        for (int swap_count = 0; swap_count < 5; swap_count++)
+        if (active_sprite_count > 1)
         {
-          int sprite2_index = rand() % max_sprites;
+          int sprite2_index = active_sprites[rand() % active_sprite_count];
           int sprite2_addr = sprite_table_base + (sprite2_index * sprite_entry_size);
+
+          fprintf(stderr, "  Effect: Swapping sprite %d with sprite %d\n", sprite_index, sprite2_index);
 
           for (int byte_offset = 0; byte_offset < sprite_entry_size; byte_offset++)
           {
             unsigned char temp = vram[sprite_addr + byte_offset];
             poke_vram(sprite_addr + byte_offset, vram[sprite2_addr + byte_offset]);
             poke_vram(sprite2_addr + byte_offset, temp);
+          }
+        }
+        else
+        {
+          fprintf(stderr, "  Effect: Only one active sprite, randomizing it instead\n");
+          for (int byte_offset = 0; byte_offset < sprite_entry_size; byte_offset++)
+          {
+            poke_vram(sprite_addr + byte_offset, rand() % 256);
           }
         }
       }
@@ -741,7 +799,7 @@ void md_vdp::sprite_attribute_scramble()
   memset(dirt + 0x00, 0xFF, 0x20);
   dirt[0x34] |= 1;
 
-  fprintf(stderr, "Aggressive sprite scrambling complete!\n");
+  fprintf(stderr, "Intelligent sprite scrambling complete! Applied %d effects to active sprites.\n", effects_to_apply);
 }
 
 /**
