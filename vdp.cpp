@@ -761,3 +761,16 @@ void md_vdp::scroll_register_fuzzing()
   write_reg(reg_to_fuzz, new_value);
   fprintf(stderr, "Fuzzed scroll register %d: 0x%02X -> 0x%02X\n", reg_to_fuzz, original_value, new_value);
 }
+
+/**
+ * Corrupt a single random byte in 68k RAM.
+ * This can cause crashes or unpredictable behavior.
+ */
+void md_vdp::corrupt_68k_ram_one_byte()
+{
+  int addr = 0xFF0000 + (rand() % 0x10000); // Random address in 68k RAM (64KB at 0xFF0000-0xFFFFFF)
+  unsigned char original_value = belongs.misc_readbyte(addr);
+  unsigned char new_value = rand() % 256; // New random byte value
+  belongs.misc_writebyte(addr, new_value);
+  fprintf(stderr, "Corrupted 68k RAM at address 0x%05X: 0x%02X -> 0x%02X\n", addr, original_value, new_value);
+}
