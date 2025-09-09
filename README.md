@@ -79,6 +79,10 @@ Drag a ROM file onto the dgen.exe
 
 \* Shifting Z80 memory can actually result in corrupting the audio processor's program counter, stack, and critical variables, which causes it to execute invalid instructions or jump to wrong addresses, freezing the system. Sometimes if you step backward it will recover. Room for improvement here.
 
+### General Mayhem
+
+- Key J: Randomly corrupt a byte of main (68K) memory. Will likely result in crashes!
+
 ## Contributing
 
 PRs welcome.

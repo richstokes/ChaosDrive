@@ -6792,6 +6792,7 @@ next_event:
 			static bool prev_e_key = false;
 			static bool prev_w_key = false;
 			static bool prev_k_key = false;
+			static bool prev_j_key = false;
 
 			// Check for VRAM shift keys (9 = up, 0 = down)
 			if (kpress[SDLK_9 & 0xff])
@@ -6926,6 +6927,13 @@ next_event:
 				pd_message("Scroll registers fuzzed");
 			}
 			prev_k_key = current_k_key;
+
+			// Call corrupt_68k_ram_one_byte when J key is pressed (can hold to repeat)
+			if (kpress[SDLK_j & 0xff])
+			{
+				megad.vdp.corrupt_68k_ram_one_byte();
+				pd_message("68k RAM corrupted (one byte)");
+			}
 		}
 		return 1;
 	}
