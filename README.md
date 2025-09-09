@@ -79,6 +79,7 @@ Drag a ROM file onto the dgen.exe
 - Key Q: Detune FM channels/registers (music etc will go out of tune while held)
 - Key W: Disable FM corruption (single press)
 - Key E: Enable FM corruption (single press) - result in extremely cursed background music
+- Key T: Corrupt DAC/PCM data - effects drums, generally
 
 \* Shifting Z80 memory can actually result in corrupting the audio processor's program counter, stack, and critical variables, which causes it to execute invalid instructions or jump to wrong addresses, freezing the system. Sometimes if you step backward it will recover. Room for improvement here.
 

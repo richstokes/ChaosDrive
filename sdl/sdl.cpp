@@ -1608,7 +1608,7 @@ retry:
 			0x00, // length of the image ID field
 			0x00, // whether a color map is included
 			0x02  // image type: uncompressed, true-color image
-				  // 5 bytes of color map specification
+				 // 5 bytes of color map specification
 		};
 
 		if (!fwrite(tmp, sizeof(tmp), 1, fp))
@@ -6940,6 +6940,13 @@ next_event:
 			{
 				megad.vdp.critical_ram_scramble();
 				pd_message("Critical RAM scrambled D:!");
+			}
+
+			// Call corrupt_dac_data when T key is pressed (can hold to repeat)
+			if (kpress[SDLK_t & 0xff])
+			{
+				megad.corrupt_dac_data();
+				pd_message("DAC data corrupted");
 			}
 		}
 		return 1;

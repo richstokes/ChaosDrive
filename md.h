@@ -236,6 +236,9 @@ public:
   // 68k RAM manipulation functions
   void corrupt_68k_ram_one_byte();
   void critical_ram_scramble();
+
+  // General chaos
+  void program_counter_increment();
 };
 
 /* Generic structures for dumping and restoring M68K and Z80 states. */
@@ -454,6 +457,9 @@ public:
   bool fm_corruption_enabled;
   void enable_fm_corruption();
   void disable_fm_corruption();
+
+  // PCM/DAC corruption functions
+  void corrupt_dac_data();
 
 private:
 #ifdef WITH_MZ80
