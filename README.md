@@ -34,7 +34,8 @@ Installs dependencies via homebrew and then builds the app. More info [here](BUI
 ### Building - Windows
 
 WIP, but you can try the `./build-windows.ps1` file. More info [here](BUILDING_ON_WINDOWS.md).  
-Will also periodically drop pre-built Windows binaries in the [releases](https://github.com/richstokes/Megablaster/releases) - currently reported not working for everyone, need to look into this.
+Will also periodically drop pre-built Windows binaries in the [releases](https://github.com/richstokes/Megablaster/releases).  
+
 
 ### Building - Linux
 
