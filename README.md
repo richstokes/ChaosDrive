@@ -57,6 +57,7 @@ Drag a ROM file onto the dgen.exe
 - Keys A,S,D: ABC on the controller
 - Arrow keys: D-Pad on the controller
 - Enter: Start button on the controller
+- Tab: Reset the console
 
 ### Video Controls
 
