@@ -26,7 +26,7 @@ Results in a number of weird, wonderful, interesting, insane effects. The softwa
 
 ### Ecco
 <p align="center">
-    <img src="screenshots/e1.jpg" alt="Ecco screenshot" width="400">
+    <img src="screenshots/e1.jpg" alt="Cursed af Ecco screenshot" width="400">
 </p>
 <p align="center">
     <img src="screenshots/e2.jpg" alt="Ecco screenshot" width="400">
