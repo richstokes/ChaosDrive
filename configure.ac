@@ -651,6 +651,14 @@ AS_IF(
 
 dnl Prevent dgen_tobin from being linked with unnecessary libraries.
 DGEN_LIBS="$LIBS"
+
+dnl Add Windows-specific libraries directly when building on Windows.
+case "${host}" in
+    *mingw*|*cygwin*|*msys*)
+        DGEN_LIBS="$DGEN_LIBS -lwinmm -lgdi32 -ldinput8 -ldxguid -limm32 -lole32 -loleaut32 -luuid"
+        ;;
+esac
+
 LIBS="$TOBIN_LIBS"
 
 dnl Define everything.
