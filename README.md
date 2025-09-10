@@ -9,30 +9,30 @@ Results in a number of weird, wonderful, interesting, insane effects. The softwa
 ### Sonic 1
 
 <p align="center">
-    <img src="screenshots/s1.png" alt="Sonic screenshot" width="50%">
+    <img src="screenshots/s1.png" alt="Sonic screenshot" width="400">
 </p>
 <p align="center">
-    <img src="screenshots/s2.png" alt="Sonic screenshot" width="50%">
+    <img src="screenshots/s2.png" alt="Sonic screenshot" width="400">
 </p>
 <p align="center">
-    <img src="screenshots/s3.png" alt="Sonic screenshot" width="50%">
+    <img src="screenshots/s3.png" alt="Sonic screenshot" width="400">
 </p>
 <p align="center">
-    <img src="screenshots/s4.png" alt="Sonic screenshot" width="50%">
+    <img src="screenshots/s4.png" alt="Sonic screenshot" width="400">
 </p>
 <p align="center">
-    <img src="screenshots/s5.png" alt="Sonic screenshot" width="50%">
+    <img src="screenshots/s5.png" alt="Sonic screenshot" width="400">
 </p>
 
 ### Ecco
 <p align="center">
-    <img src="screenshots/e1.jpg" alt="Ecco screenshot" width="50%">
+    <img src="screenshots/e1.jpg" alt="Ecco screenshot" width="400">
 </p>
 <p align="center">
-    <img src="screenshots/e2.jpg" alt="Ecco screenshot" width="50%">
+    <img src="screenshots/e2.jpg" alt="Ecco screenshot" width="400">
 </p>
 <p align="center">
-    <img src="screenshots/e3.jpg" alt="Ecco screenshot" width="50%">
+    <img src="screenshots/e3.jpg" alt="Ecco screenshot" width="400">
 </p>
 
 ## Build
