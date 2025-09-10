@@ -31,7 +31,7 @@ The scripts will automatically install prerequisites, but you need:
 # Clean build (removes previous build artifacts)
 .\build-windows.ps1 -CleanBuild
 
-# Both options together
+# Both options together (seems to be most reliable once initial dependencies are installed)
 .\build-windows.ps1 -SkipPrerequisites -CleanBuild
 ```
 
