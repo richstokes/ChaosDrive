@@ -81,7 +81,6 @@ Drag a ROM file onto the dgen.exe
 - Key L: Move VRAM contents down one block
 - Key K: Move VRAM contents "left" one block
 - Key ; (semi colon): Move VRAM contents "right" one block
-
 - Key I: Move VRAM contents down a random amount
 - Key P: Corrupt a randomly-selected, single byte of VRAM (hold to repeat)
 - Key \: Bitwise inversion of all VRAM contents (press again to repeat)
