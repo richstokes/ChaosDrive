@@ -25,6 +25,7 @@ Results in a number of weird, wonderful, interesting, insane effects. The softwa
 </p>
 
 ### Ecco
+
 <p align="center">
     <img src="screenshots/e1.jpg" alt="Cursed af Ecco screenshot" width="400">
 </p>
@@ -46,7 +47,6 @@ Installs dependencies via homebrew and then builds the app. More info [here](BUI
 
 WIP, but you can try the `./build-windows.ps1` file. More info [here](BUILDING_ON_WINDOWS.md).  
 Will also periodically drop pre-built Windows binaries in the [releases](https://github.com/richstokes/Megablaster/releases).  
-
 
 ### Building - Linux
 
@@ -70,41 +70,58 @@ Drag a ROM file onto the dgen.exe
 - Arrow keys: D-Pad on the controller
 - Enter: Start button on the controller
 - Tab: Reset the console
+- Z: Pause/Resume emulation
+- Escape: Quit the emulator
 
 ### Video Controls
 
-- Key 9: Shift VRAM contents up one byte
-- Key 0: Shift VRAM contents down one byte
-- Key R: Randomly corrupt a chunk of VRAM
-- Key P: Randomize CRAM contents (once, hold to repeat)
-- Key L: Corrupt a single byte of VRAM with random contents (hold to repeat)
-- Key K: Fuzz scroll registers (once, press again to repeat)
-- Key I: Toggle persistent CRAM corruption on - causes random color glitches
-- Key O: Toggle persistent CRAM corruption off
-- Key U: Scramble sprite attributes (X, Y, tile index, etc) - causes sprites to jump around, flicker, disappear, etc.
-- Key ; (semi colon): Bitwise inversion of all VRAM contents
+#### VRAM Manipulation
 
-### Audio Memory Controls
+- Key O: Move VRAM contents up one block
+- Key L: Move VRAM contents down one block
+- Key K: Move VRAM contents "left" one block
+- Key ; (semi colon): Move VRAM contents "right" one block
 
-- Key 7: Shift Z80 audio memory up*
-- Key 8: Shift Z80 audio memory down*
-- Key C: Corrupt audio (YM2612) registers
-- Key V: Corrupt audio (SN76496) PSG registers
-- Key Q: Detune FM channels/registers (music etc will go out of tune while held)
-- Key W: Disable FM corruption (single press)
-- Key E: Enable FM corruption (single press) - result in extremely cursed background music
-- Key T: Corrupt DAC/PCM data - effects drums, generally
+- Key I: Move VRAM contents down a random amount
+- Key P: Corrupt a randomly-selected, single byte of VRAM (hold to repeat)
+- Key \: Bitwise inversion of all VRAM contents (press again to repeat)
 
-\* Shifting Z80 memory can actually result in corrupting the audio processor's program counter, stack, and critical variables, which causes it to execute invalid instructions or jump to wrong addresses, freezing the system. Sometimes if you step backward it will recover. Room for improvement here.
+#### CRAM/Color Manipulation
+
+- Key [: Randomize CRAM contents (once, hold to repeat)
+- Key ]: Shift CRAM contents up one byte (once, hold to repeat)
+- Key Y: Toggle persistent CRAM corruption on
+- Key U: Toggle persistent CRAM corruption off
+
+#### Sprite/Scroll Manipulation
+
+- Key R: Fuzz scroll registers (once, press again to repeat)
+- Key T: Scramble sprite attributes (X, Y, tile index, etc) - causes sprites to jump around, flicker, disappear, etc.
+
+#### Future Video Features
+
+- Key Q,W,E reserved for future video features
+
+### Audio Controls
+
+- Key X: Enable FM corruption (single press) - results in extremely cursed background music
+- Key C: Disable FM corruption (single press)
+- Key V: Corrupt DAC/PCM data - effects drums, generally
+- Key B: Apply bitcrush effect
+- Key N: Detune FM channels/registers (music etc will go out of tune while held)
+- Key , (comma): Shift Z80 audio memory up (once, hold to repeat)*
+- Key . (period): Shift Z80 audio memory down (once, hold to repeat)
+
+\* Shifting Z80 memory can actually result in corrupting the audio processor's program counter, stack, and critical variables, which causes it to execute invalid instructions or jump to wrong addresses, freezing the system. Sometimes if you step backward it will recover. Room for improvement here!
 
 ### General Mayhem
 
 > Will likely result in crashes!
 
-- Key J: Randomly corrupt a byte of main (68K) memory
-- Key H: Scramble critical RAM areas
-- Key N: Force-Increment the program counter a random small amount
-- Key M: Corrupt a random register
+- Key F: Randomly corrupt a byte of main (68K) memory
+- Key G: Scramble critical RAM areas
+- Key H: Force-Increment the program counter a random small amount
+- Key J: Corrupt a random register
 
 ## Contributing
 

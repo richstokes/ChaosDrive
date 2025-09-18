@@ -533,6 +533,46 @@ void md_vdp::shift_vram_down_random()
 }
 
 /**
+ * Shift VRAM contents left by one byte.
+ * This moves all data one byte earlier in memory within each 256-byte block.
+ */
+void md_vdp::shift_vram_left()
+{
+  fprintf(stderr, "Shifting VRAM left by 1 byte within each 256-byte block...\n");
+  // Move all bytes one position left within each 256-byte block
+  for (int block = 0; block < 0x100; block++)
+  {
+    int base = block * 256;
+    for (int i = 0; i < 255; i++)
+    {
+      poke_vram(base + i, vram[base + i + 1]);
+    }
+    // Clear the last byte of the block
+    // poke_vram(base + 255, 0);
+  }
+}
+
+/**
+ * Shift VRAM contents right by one byte.
+ * This moves all data one byte later in memory within each 256-byte block.
+ */
+void md_vdp::shift_vram_right()
+{
+  fprintf(stderr, "Shifting VRAM right by 1 byte within each 256-byte block...\n");
+  // Move all bytes one position right within each 256-byte block
+  for (int block = 0; block < 0x100; block++)
+  {
+    int base = block * 256;
+    for (int i = 255; i > 0; i--)
+    {
+      poke_vram(base + i, vram[base + i - 1]);
+    }
+    // Clear the first byte of the block
+    // poke_vram(base + 0, 0);
+  }
+}
+
+/**
  * Randomize color entries in CRAM. Produces acid trip color swaps without destroying tile data.
  */
 void md_vdp::randomize_cram()
@@ -544,6 +584,25 @@ void md_vdp::randomize_cram()
     int j = rand() % 0x100;
     std::swap(cram[i], cram[j]);
   }
+
+  // Mark all CRAM as dirty
+  memset(dirt + 0x20, 0xFF, 0x10);
+  dirt[0x34] |= 2;
+}
+
+/**
+ * Shift CRAM contents up by one byte.
+ */
+void md_vdp::shift_cram_up()
+{
+  fprintf(stderr, "Shifting CRAM up by 1 byte...\n");
+  // Move all bytes one position up (toward lower addresses)
+  for (int i = 0; i < 0x7F; i++)
+  {
+    poke_cram(i, cram[i + 1]);
+  }
+  // Clear the last byte
+  // poke_cram(0x7F, 0);
 
   // Mark all CRAM as dirty
   memset(dirt + 0x20, 0xFF, 0x10);
