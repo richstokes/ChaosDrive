@@ -491,6 +491,8 @@ void md::shift_audio_memory_up()
 	}
 	// Clear the last byte -- not sure we want this if going for max glitching
 	// z80ram[0x1FFF] = 0;
+
+	fprintf(stderr, "%s: Shifted audio memory up by one byte.\n", __func__);
 }
 
 /**
@@ -511,6 +513,7 @@ void md::shift_audio_memory_down()
 	}
 	// Clear the first byte -- not sure we want this if going for max glitching
 	// z80ram[0] = 0;
+	fprintf(stderr, "%s: Shifted audio memory down by one byte.\n", __func__);
 }
 
 /**

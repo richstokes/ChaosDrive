@@ -225,7 +225,10 @@ public:
   // VRAM manipulation functions
   void shift_vram_up();
   void shift_vram_down();
+  void shift_vram_left();
+  void shift_vram_right();
   void shift_vram_down_random();
+  void shift_cram_up();
   void randomize_cram();
   void enable_cram_corruption();
   void disable_cram_corruption();

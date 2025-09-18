@@ -9220,6 +9220,13 @@ fi
 fi
 
 DGEN_LIBS="$LIBS"
+
+case "${host}" in
+    *mingw*|*cygwin*|*msys*)
+        DGEN_LIBS="$DGEN_LIBS -lwinmm -lgdi32 -ldinput8 -ldxguid -limm32 -lole32 -loleaut32 -luuid"
+        ;;
+esac
+
 LIBS="$TOBIN_LIBS"
 
 if test "x$USE_OPENGL" = xyes

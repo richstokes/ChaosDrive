@@ -1608,7 +1608,7 @@ retry:
 			0x00, // length of the image ID field
 			0x00, // whether a color map is included
 			0x02  // image type: uncompressed, true-color image
-				  // 5 bytes of color map specification
+				 // 5 bytes of color map specification
 		};
 
 		if (!fwrite(tmp, sizeof(tmp), 1, fp))
@@ -6795,56 +6795,202 @@ next_event:
 			static bool prev_j_key = false;
 			static bool prev_n_key = false;
 			static bool prev_m_key = false;
+			static bool prev_y_key = false;
+			static bool prev_r_key = false;
+			static bool prev_t_key = false;
+			static bool prev_x_key = false;
+			static bool prev_c_key = false;
+			static bool prev_b_key = false;
+			static bool prev_a_key = false;
+			static bool prev_h_key = false;
 			static bool prev_colon_key = false;
+			static bool prev_backslash_key = false;
 
-			// Check for VRAM shift keys (9 = up, 0 = down)
-			if (kpress[SDLK_9 & 0xff])
+			// Check for VRAM shift keys (O = up, L = down)
+			if (kpress[SDLK_o & 0xff])
 			{
 				megad.vdp.shift_vram_up();
 				pd_message("VRAM shifted up by 1 byte");
 			}
-			if (kpress[SDLK_0 & 0xff])
+			if (kpress[SDLK_l & 0xff])
 			{
 				megad.vdp.shift_vram_down();
 				pd_message("VRAM shifted down by 1 byte");
 			}
+			if (kpress[SDLK_k & 0xff])
+			{
+				megad.vdp.shift_vram_left();
+				pd_message("VRAM shifted left by 1 byte");
+			}
+			if (kpress[SDLK_SEMICOLON & 0xff])
+			{
+				megad.vdp.shift_vram_right();
+				pd_message("VRAM shifted right by 1 byte");
+			}
 
-			// Randomize CRAM contents when P key pressed (able to hold key)
+			// Call shift_vram_down_random when I key is pressed
+			if (kpress[SDLK_i & 0xff])
+			{
+				megad.vdp.shift_vram_down_random();
+				pd_message("VRAM shifted down by random amount");
+			}
+
+			// Call corrupt_vram_one_byte when P key is pressed
 			if (kpress[SDLK_p & 0xff])
+			{
+				megad.vdp.corrupt_vram_one_byte();
+				pd_message("VRAM corrupted (one byte)");
+			}
+
+			// Randomize CRAM contents when [ key is pressed
+			if (kpress[SDLK_LEFTBRACKET & 0xff])
 			{
 				megad.vdp.randomize_cram();
 				pd_message("CRAM randomized");
 			}
 
-			// Enable CRAM Corruption when I key pressed (single press)
-			bool current_i_key = kpress[SDLK_i & 0xff] != 0;
-			if (current_i_key && !prev_i_key)
+			// Call shift_cram_up when ] key is pressed
+			if (kpress[SDLK_RIGHTBRACKET & 0xff])
+			{
+				megad.vdp.shift_cram_up();
+				pd_message("CRAM shifted up");
+			}
+
+			// Enable CRAM Corruption when Y key pressed (single press)
+			bool current_y_key = kpress[SDLK_y & 0xff] != 0;
+			if (current_y_key && !prev_y_key)
 			{
 				megad.vdp.enable_cram_corruption();
 				pd_message("CRAM corruption enabled");
 			}
-			prev_i_key = current_i_key;
+			prev_y_key = current_y_key;
 
-			// Disable CRAM Corruption when O key pressed (single press)
-			bool current_o_key = kpress[SDLK_o & 0xff] != 0;
-			if (current_o_key && !prev_o_key)
+			// Disable CRAM Corruption when U key pressed (single press)
+			bool current_u_key = kpress[SDLK_u & 0xff] != 0;
+			if (current_u_key && !prev_u_key)
 			{
 				megad.vdp.disable_cram_corruption();
 				pd_message("CRAM corruption disabled");
 			}
-			prev_o_key = current_o_key;
+			prev_u_key = current_u_key;
 
-			// Check for audio memory shift keys (7 = up, 8 = down)
-			if (kpress[SDLK_7 & 0xff])
+			// Call scroll_register_fuzzing when R key is pressed (single press)
+			bool current_r_key = kpress[SDLK_r & 0xff] != 0;
+			if (current_r_key && !prev_r_key)
+			{
+				megad.vdp.scroll_register_fuzzing();
+				pd_message("Scroll registers fuzzed");
+			}
+			prev_r_key = current_r_key;
+
+			// Scramble sprite attributes when T key is pressed (single press)
+			bool current_t_key = kpress[SDLK_t & 0xff] != 0;
+			if (current_t_key && !prev_t_key)
+			{
+				megad.vdp.sprite_attribute_scramble();
+				pd_message("Sprite attributes scrambled");
+			}
+			prev_t_key = current_t_key;
+
+			// Call invert_vram_contents when backslash \ key is pressed (single press)
+			bool current_backslash_key = kpress[SDLK_BACKSLASH & 0xff] != 0;
+			if (current_backslash_key && !prev_backslash_key)
+			{
+				megad.vdp.invert_vram_contents();
+				pd_message("VRAM contents inverted");
+			}
+			prev_backslash_key = current_backslash_key;
+
+			//
+			// AUDIO FEATURES
+			//
+
+			// Enable FM Corruption when X key pressed (single press)
+			bool current_x_key = kpress[SDLK_x & 0xff] != 0;
+			if (current_x_key && !prev_x_key)
+			{
+				megad.enable_fm_corruption();
+				pd_message("FM corruption enabled");
+			}
+			prev_x_key = current_x_key;
+
+			// Disable FM Corruption when C key pressed (single press)
+			bool current_c_key = kpress[SDLK_c & 0xff] != 0;
+			if (current_c_key && !prev_c_key)
+			{
+				megad.disable_fm_corruption();
+				pd_message("FM corruption disabled");
+			}
+			prev_c_key = current_c_key;
+
+			// Call corrupt_dac_data when V key is pressed (can hold to repeat)
+			if (kpress[SDLK_v & 0xff])
+			{
+				megad.corrupt_dac_data();
+				pd_message("DAC data corrupted");
+			}
+
+			// Call bitcrush_audio_memory when B key is pressed
+			if (kpress[SDLK_b & 0xff])
+			{
+				megad.bitcrush_audio_memory(4); // Clear 2 lower bits for moderate bitcrush effect
+				pd_message("Audio memory bitcrushed");
+			}
+
+			// Detune FM channels when N key is pressed (can hold key)
+			if (kpress[SDLK_n & 0xff])
+			{
+				megad.detune_fm_registers();
+				pd_message("FM channels/registers detuned");
+			}
+
+			// Check for audio memory shift keys (, = up, . = down)
+			if (kpress[SDLK_COMMA & 0xff])
 			{
 				megad.shift_audio_memory_up();
 				pd_message("Audio memory shifted up by 1 byte");
 			}
-			if (kpress[SDLK_8 & 0xff])
+			if (kpress[SDLK_PERIOD & 0xff])
 			{
 				megad.shift_audio_memory_down();
 				pd_message("Audio memory shifted down by 1 byte");
 			}
+
+			//
+			// CPU / General Mayhem
+			//
+
+			// Call corrupt_68k_ram_one_byte when F key is pressed (can hold to repeat)
+			if (kpress[SDLK_f & 0xff])
+			{
+				megad.vdp.corrupt_68k_ram_one_byte();
+				pd_message("68k RAM corrupted (one byte)");
+			}
+
+			// Call critical_ram_scramble when G key is pressed (can hold to repeat)
+			if (kpress[SDLK_g & 0xff])
+			{
+				megad.vdp.critical_ram_scramble();
+				pd_message("Critical RAM scrambled D:!");
+			}
+
+			// Call program_counter_increment when H key is pressed (single press)
+			bool current_h_key = kpress[SDLK_h & 0xff] != 0;
+			if (current_h_key && !prev_h_key)
+			{
+				megad.vdp.program_counter_increment();
+				pd_message("Program counter incremented");
+			}
+			prev_h_key = current_h_key;
+
+			// Call random_register_corruption when J key is pressed (single press)
+			bool current_j_key = kpress[SDLK_j & 0xff] != 0;
+			if (current_j_key && !prev_j_key)
+			{
+				megad.vdp.random_register_corruption();
+				pd_message("Random register corrupted");
+			}
+			prev_j_key = current_j_key;
 
 			// // Call corrupt_audio_memory when C key is pressed
 			// if (kpress[SDLK_c & 0xff])
@@ -6853,131 +6999,19 @@ next_event:
 			// 	pd_message("Audio memory corrupted");
 			// }
 
-			// // Call bitcrush_audio_memory when V key is pressed
-			// if (kpress[SDLK_v & 0xff])
+			// // Call corrupt_ym2612_registers when C key is pressed
+			// if (kpress[SDLK_c & 0xff])
 			// {
-			// 	megad.bitcrush_audio_memory(4); // Clear 2 lower bits for moderate bitcrush effect
-			// 	pd_message("Audio memory bitcrushed");
+			// 	megad.corrupt_ym2612_registers();
+			// 	pd_message("YM2612 registers corrupted");
 			// }
 
-			// Call corrupt_ym2612_registers when C key is pressed
-			if (kpress[SDLK_c & 0xff])
-			{
-				megad.corrupt_ym2612_registers();
-				pd_message("YM2612 registers corrupted");
-			}
-
-			// Call corrupt_psg_registers when V key is pressed
-			if (kpress[SDLK_v & 0xff])
-			{
-				megad.corrupt_psg_registers();
-				pd_message("PSG registers corrupted");
-			}
-
-			// Call shift_vram_down_random when R key is pressed
-			if (kpress[SDLK_r & 0xff])
-			{
-				megad.vdp.shift_vram_down_random();
-				pd_message("VRAM shifted down by random amount");
-			}
-
-			// Detune FM channels when Q key is pressed (can hold key)
-			if (kpress[SDLK_q & 0xff])
-			{
-				megad.detune_fm_registers();
-				pd_message("FM channels/registers detuned");
-			}
-
-			// Scramble sprite attributes when U key is pressed (single press)
-			bool current_u_key = kpress[SDLK_u & 0xff] != 0;
-			if (current_u_key && !prev_u_key)
-			{
-				megad.vdp.sprite_attribute_scramble();
-				pd_message("Sprite attributes scrambled");
-			}
-			prev_u_key = current_u_key;
-
-			// Enable FM Corruption when E key pressed (single press)
-			bool current_e_key = kpress[SDLK_e & 0xff] != 0;
-			if (current_e_key && !prev_e_key)
-			{
-				megad.enable_fm_corruption();
-				pd_message("FM corruption enabled");
-			}
-			prev_e_key = current_e_key;
-
-			// Disable FM Corruption when W key pressed (single press)
-			bool current_w_key = kpress[SDLK_w & 0xff] != 0;
-			if (current_w_key && !prev_w_key)
-			{
-				megad.disable_fm_corruption();
-				pd_message("FM corruption disabled");
-			}
-			prev_w_key = current_w_key;
-
-			// Call corrupt_vram_one_byte when L key is pressed
-			if (kpress[SDLK_l & 0xff])
-			{
-				megad.vdp.corrupt_vram_one_byte();
-				pd_message("VRAM corrupted (one byte)");
-			}
-
-			// Call scroll_register_fuzzing when K key is pressed (single press)
-			bool current_k_key = kpress[SDLK_k & 0xff] != 0;
-			if (current_k_key && !prev_k_key)
-			{
-				megad.vdp.scroll_register_fuzzing();
-				pd_message("Scroll registers fuzzed");
-			}
-			prev_k_key = current_k_key;
-
-			// Call corrupt_68k_ram_one_byte when J key is pressed (can hold to repeat)
-			if (kpress[SDLK_j & 0xff])
-			{
-				megad.vdp.corrupt_68k_ram_one_byte();
-				pd_message("68k RAM corrupted (one byte)");
-			}
-
-			// Call critical_ram_scramble when H key is pressed (can hold to repeat)
-			if (kpress[SDLK_h & 0xff])
-			{
-				megad.vdp.critical_ram_scramble();
-				pd_message("Critical RAM scrambled D:!");
-			}
-
-			// Call corrupt_dac_data when T key is pressed (can hold to repeat)
-			if (kpress[SDLK_t & 0xff])
-			{
-				megad.corrupt_dac_data();
-				pd_message("DAC data corrupted");
-			}
-
-			// Call program_counter_increment when N key is pressed (single press)
-			bool current_n_key = kpress[SDLK_n & 0xff] != 0;
-			if (current_n_key && !prev_n_key)
-			{
-				megad.vdp.program_counter_increment();
-				pd_message("Program counter incremented");
-			}
-			prev_n_key = current_n_key;
-
-			// Call random_register_corruption when M key is pressed (single press)
-			bool current_m_key = kpress[SDLK_m & 0xff] != 0;
-			if (current_m_key && !prev_m_key)
-			{
-				megad.vdp.random_register_corruption();
-				pd_message("Random register corrupted");
-			}
-			prev_m_key = current_m_key;
-
-			// Call invert_vram_contents when colon ; key is pressed (single press)
-			bool current_colon_key = kpress[SDLK_SEMICOLON & 0xff] != 0;
-			if (current_colon_key && !prev_colon_key)
-			{
-				megad.vdp.invert_vram_contents();
-				pd_message("VRAM contents inverted");
-			}
-			prev_colon_key = current_colon_key;
+			// // Call corrupt_psg_registers when V key is pressed
+			// if (kpress[SDLK_v & 0xff])
+			// {
+			// 	megad.corrupt_psg_registers();
+			// 	pd_message("PSG registers corrupted");
+			// }
 		}
 		return 1;
 	}
