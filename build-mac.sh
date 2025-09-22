@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# buildandrun.sh - Build and optionally run DGen/SDL on macOS
-# This script automates the build process for DGen/SDL on Apple Silicon Macs
+# buildandrun.sh - Build and optionally run ChaosDrive on macOS
+# This script automates the build process for ChaosDrive on Apple Silicon Macs
 
 set -e  # Exit on any error
 
@@ -120,7 +120,7 @@ configure_build() {
 
 # Function to build the project
 build_project() {
-    print_status "Building Megablaster..!"
+    print_status "Building ChaosDrive..!"
     
     # Clean any previous build
     if [ -f "Makefile" ]; then

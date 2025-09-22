@@ -1608,7 +1608,7 @@ retry:
 			0x00, // length of the image ID field
 			0x00, // whether a color map is included
 			0x02  // image type: uncompressed, true-color image
-				 // 5 bytes of color map specification
+				  // 5 bytes of color map specification
 		};
 
 		if (!fwrite(tmp, sizeof(tmp), 1, fp))
@@ -4126,7 +4126,7 @@ int pd_graphics_init(int want_sound, int want_pal, int hz)
 	// Required for text input.
 	SDL_EnableUNICODE(1);
 	// Set the titlebar.
-	SDL_WM_SetCaption("Megablaster9000", "Megablaster9000");
+	SDL_WM_SetCaption("ChaosDrive", "ChaosDrive");
 	// Keep the cursor visible.
 	SDL_ShowCursor(1);
 	// Initialize screen.

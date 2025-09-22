@@ -1,6 +1,6 @@
 #!/usr/bin/env powershell
 #
-# Windows Build Script for Megablaster/DGen
+# Windows Build Script for ChaosDrive
 # This script sets up the complete build environment and compiles the project
 # without modifying any source files or Makefiles.
 #
@@ -31,7 +31,7 @@ function Write-Info($Message) { Write-ColorOutput "Green" "INFO: $Message" }
 function Write-Warning($Message) { Write-ColorOutput "Yellow" "WARNING: $Message" }
 function Write-Error($Message) { Write-ColorOutput "Red" "ERROR: $Message" }
 
-Write-Info "Starting Windows build for Megablaster/DGen"
+Write-Info "Starting Windows build for ChaosDrive"
 Write-Info "Project directory: $PROJECT_DIR"
 
 # Check if running as administrator for prerequisite installation
