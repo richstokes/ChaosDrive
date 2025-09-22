@@ -6,13 +6,14 @@ Results in a number of weird, wonderful, interesting, insane effects. The softwa
 
 ## Examples
 
+### Demo Video
+
+[![Demo Video](screenshots/s2.png)](https://youtu.be/NOr6cpggte4?si=Mn660RcFDUKrf0lx)
+
 ### Sonic 1
 
 <p align="center">
     <img src="screenshots/s1.png" alt="Sonic screenshot" width="400">
-</p>
-<p align="center">
-    <img src="screenshots/s2.png" alt="Sonic screenshot" width="400">
 </p>
 <p align="center">
     <img src="screenshots/s3.png" alt="Sonic screenshot" width="400">
@@ -40,8 +41,7 @@ Results in a number of weird, wonderful, interesting, insane effects. The softwa
 
 ### Building - Mac
 
-`./buildandrun.sh` - A vibe-coded build script that "works on my machine".  
-Installs dependencies via homebrew and then builds the app. More info [here](BUILDING_ON_MACOS.md).
+`./build-mac.sh` - will use homebrew to install dependencies if needed, then build the project.
 
 ### Building - Windows
 

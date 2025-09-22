@@ -59,11 +59,11 @@ check_dependencies() {
     fi
     
     # Also check that the AM_PATH_SDL macro is available for autotools
-    if ! find /opt/homebrew/share/aclocal -name "sdl.m4" >/dev/null 2>&1; then
-        if ! echo "${missing_deps[*]}" | grep -q "sdl12-compat"; then
-            missing_deps+=("sdl12-compat")
-        fi
-    fi
+    # if ! find /opt/homebrew/share/aclocal -name "sdl.m4" >/dev/null 2>&1; then
+    #     if ! echo "${missing_deps[*]}" | grep -q "sdl12-compat"; then
+    #         missing_deps+=("sdl12-compat")
+    #     fi
+    # fi
     
     if [ ${#missing_deps[@]} -gt 0 ]; then
         print_warning "Missing dependencies: ${missing_deps[*]}"
@@ -108,18 +108,19 @@ generate_build_system() {
 
 # Function to configure the build
 configure_build() {
-    print_status "Configuring build for Apple Silicon with SDL compatibility..."
+    print_status "Configuring build..."
     
     # Use x86_64 architecture for compatibility with SDL libraries
-    SDL_LIBS="-L/usr/local/lib -lSDLmain -lSDL -Wl,-framework,Cocoa" arch -x86_64 ./configure
+    # SDL_LIBS="-L/usr/local/lib -lSDLmain -lSDL -Wl,-framework,Cocoa" arch -x86_64 ./configure
     
+    # Let configure auto-detect SDL via pkg-config
+    ./configure 
     print_success "Build configured successfully"
 }
 
 # Function to build the project
 build_project() {
-    print_status "Building DGen/SDL..."
-    print_warning "Building with x86_64 architecture for SDL compatibility..."
+    print_status "Building Megablaster..!"
     
     # Clean any previous build
     if [ -f "Makefile" ]; then
@@ -129,7 +130,8 @@ build_project() {
     # Build with x86_64 architecture using parallel compilation
     # Use 8 parallel jobs (leaving 2 cores free for system responsiveness)
     # arch -x86_64 make -j8 # Seems to not work?
-    arch -x86_64 make
+    # arch -x86_64 make
+    make
     
     print_success "Build completed successfully!"
 }
