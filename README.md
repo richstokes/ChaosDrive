@@ -1,4 +1,4 @@
-# Megablaster
+# ChaosDrive
 
 Virtually circuit-bend a Sega Megadrive/Genesis. Take a perfectly good emulator (DGen), and add a number of "creative" features designed to glitch the video and audio drivers.  
 
@@ -46,7 +46,7 @@ Results in a number of weird, wonderful, interesting, insane effects. The softwa
 ### Building - Windows
 
 WIP, but you can try the `./build-windows.ps1` file. More info [here](BUILDING_ON_WINDOWS.md).  
-Will also periodically drop pre-built Windows binaries in the [releases](https://github.com/richstokes/Megablaster/releases).  
+Will also periodically drop pre-built Windows binaries in the [releases](https://github.com/richstokes/ChaosDrive/releases).  
 
 ### Building - Linux
 

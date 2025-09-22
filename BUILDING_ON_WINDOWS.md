@@ -1,10 +1,11 @@
-# Windows Build Instructions for Megablaster/DGen
+# Windows Build Instructions for ChaosDrive
 
-This directory contains automated build scripts for compiling Megablaster/DGen on Windows without modifying any source files or Makefiles.
+This directory contains automated build scripts for compiling ChaosDrive on Windows without modifying any source files or Makefiles.
 
 ## Quick Start
 
 ### Option 1: PowerShell Script (Recommended)
+
 ```powershell
 # Run as Administrator for first-time setup to install dependencies
 .\build-windows.ps1
@@ -15,12 +16,13 @@ This directory contains automated build scripts for compiling Megablaster/DGen o
 The scripts will automatically install prerequisites, but you need:
 
 1. **Windows 10/11**
-2. **Chocolatey** (for PowerShell script): https://chocolatey.org/install
+2. **Chocolatey** (for PowerShell script): <https://chocolatey.org/install>
 3. **Administrator rights** (for first-time setup only)
 
 ## Script Options
 
 ### PowerShell Script (`build-windows.ps1`)
+
 ```powershell
 # Full build with prerequisite installation (requires admin)
 .\build-windows.ps1
@@ -34,7 +36,6 @@ The scripts will automatically install prerequisites, but you need:
 # Both options together (seems to be most reliable once initial dependencies are installed)
 .\build-windows.ps1 -SkipPrerequisites -CleanBuild
 ```
-
 
 ## What the Scripts Do
 
@@ -52,6 +53,7 @@ The scripts will automatically install prerequisites, but you need:
 ## Output
 
 After successful compilation, you'll have:
+
 - `dgen.exe` - The main emulator executable
 - `dgen_tobin.exe` - ROM conversion utility
 - `SDL.dll` and other required DLLs
@@ -72,25 +74,30 @@ After successful compilation, you'll have:
 ## Troubleshooting
 
 ### "Access Denied" or Permission Errors
+
 - Run PowerShell as Administrator for first-time setup
 - Or use `-SkipPrerequisites` if MSYS2 is already installed
 
 ### "MSYS2 not found"
-- Ensure chocolatey is installed: https://chocolatey.org/install
+
+- Ensure chocolatey is installed: <https://chocolatey.org/install>
 - Run the script as Administrator to install MSYS2
 
 ### "Build failed"
+
 - Try running with `-CleanBuild` option
 - Check that all prerequisites are installed correctly
 - Ensure you have internet connection for package downloads
 
 ### "SDL.dll not found" when running dgen.exe
+
 - The build script should copy SDL.dll automatically
 - If missing, manually copy from `C:\tools\msys64\mingw64\bin\SDL.dll`
 
 ## Architecture Notes
 
 These scripts use the **MSYS2 MinGW64** environment, which provides:
+
 - 64-bit GCC compiler
 - 64-bit SDL 1.2 libraries
 - Proper Windows compatibility
@@ -101,10 +108,13 @@ The scripts do **NOT** modify any source files or Makefiles, ensuring cross-plat
 ## Advanced Usage
 
 ### Custom MSYS2 Installation Path
+
 Edit the scripts and change the `MSYS2_ROOT` variable if you have MSYS2 installed in a different location.
 
 ### Development Builds
+
 For development, you can use the bash script in an MSYS2 terminal for faster incremental builds:
+
 ```bash
 # In MSYS2 MinGW64 terminal
 export PATH="/mingw64/bin:/usr/bin:$PATH"
@@ -115,6 +125,7 @@ make
 ## Dependencies Installed
 
 The scripts install these MSYS2 packages:
+
 - `mingw-w64-x86_64-toolchain` - Complete GCC toolchain
 - `mingw-w64-x86_64-SDL` - SDL 1.2 library
 - `mingw-w64-x86_64-pkg-config` - Package configuration tool
