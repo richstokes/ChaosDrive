@@ -108,8 +108,8 @@ Drag a ROM file onto the dgen.exe
 - Key V: Corrupt DAC/PCM data - effects drums, generally
 - Key B: Apply bitcrush effect
 - Key N: Detune FM channels/registers (music etc will go out of tune while held)
-- Key , (comma): Shift Z80 audio memory up (once, hold to repeat)*
-- Key . (period): Shift Z80 audio memory down (once, hold to repeat)
+- Key , (comma): Shift Z80 audio memory up (once, press again to repeat)*
+- Key . (period): Shift Z80 audio memory down (once, press again to repeat)*
 
 \* Shifting Z80 memory can actually result in corrupting the audio processor's program counter, stack, and critical variables, which causes it to execute invalid instructions or jump to wrong addresses, freezing the system. Sometimes if you step backward it will recover. Room for improvement here!
 
