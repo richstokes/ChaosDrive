@@ -1035,15 +1035,136 @@ void md_vdp::invert_vram_contents()
 // Flip variables in memory used for game logic.
 void md_vdp::flip_game_logic_variables()
 {
-  fprintf(stderr, "Flipping game logic variables in 68k RAM...\n");
-  // Target a range of RAM likely to contain game state variables
-  for (int i = 0; i < 64; i++)
+  fprintf(stderr, "Intelligently flipping game logic variables in 68k RAM...\n");
+
+  // Define common variable location patterns used by Genesis games
+  struct VariableTarget
   {
-    int addr = 0xFF2000 + (rand() % 0x1000); // Random address in a mid-RAM range
-    unsigned char original_value = belongs.misc_readbyte(addr);
-    unsigned char new_value = ~original_value; // Bitwise NOT to flip
-    belongs.misc_writebyte(addr, new_value);
-    fprintf(stderr, "Flipped variable at 0x%05X: 0x%02X -> 0x%02X\n", addr, original_value, new_value);
+    int base_addr;
+    int range;
+    const char *description;
+  };
+
+  VariableTarget targets[] = {
+      {0xFF0000, 0x400, "Low RAM - system variables and counters"},
+      {0xFF0400, 0x400, "Early game state variables"},
+      {0xFF0800, 0x800, "Player state and inventory"},
+      {0xFF1000, 0x800, "Level/world state variables"},
+      {0xFF1800, 0x600, "Enemy/object state arrays"},
+      {0xFF2000, 0x800, "Mid-RAM game logic variables"},
+      {0xFF3000, 0x1000, "Buffer areas and temporary variables"},
+      {0xFF8000, 0x1000, "High RAM - often used for game state"},
+      {0xFFC000, 0x2000, "Upper RAM - critical game variables"},
+      {0xFFF000, 0x800, "Top RAM - scores, lives, status"}};
+
+  int num_targets = sizeof(targets) / sizeof(targets[0]);
+  int corruptions_made = 0;
+
+  // Apply chaos to each target area
+  for (int area = 0; area < num_targets; area++)
+  {
+    VariableTarget &target = targets[area];
+
+    // Corrupt 3-8 variables in this area
+    int corruptions_in_area = 3 + (rand() % 6);
+
+    for (int i = 0; i < corruptions_in_area; i++)
+    {
+      int addr = target.base_addr + (rand() % target.range);
+
+      // Read current value
+      unsigned char original_value = belongs.misc_readbyte(addr);
+
+      // Skip if the location appears to be unused (all zeros or 0xFF)
+      if (original_value == 0x00 || original_value == 0xFF)
+      {
+        continue;
+      }
+
+      // Choose chaos type based on variable patterns
+      unsigned char new_value;
+      int chaos_type = rand() % 6;
+
+      switch (chaos_type)
+      {
+      case 0:
+        // Bitwise NOT (flip all bits)
+        new_value = ~original_value;
+        break;
+      case 1:
+        // Set to common "bad" values that cause issues
+        {
+          unsigned char bad_values[] = {0xFF, 0x80, 0x7F, 0x01, 0x00};
+          new_value = bad_values[rand() % 5];
+        }
+        break;
+      case 2:
+        // Increment by random amount (can cause overflows)
+        new_value = original_value + (rand() % 32) + 1;
+        break;
+      case 3:
+        // Multiply by 2 (common source of issues)
+        new_value = original_value * 2;
+        break;
+      case 4:
+        // Set random bit
+        new_value = original_value | (1 << (rand() % 8));
+        break;
+      case 5:
+        // Clear random bit
+        new_value = original_value & ~(1 << (rand() % 8));
+        break;
+      default:
+        new_value = ~original_value;
+        break;
+      }
+
+      // Apply the corruption
+      belongs.misc_writebyte(addr, new_value);
+      corruptions_made++;
+
+      fprintf(stderr, "Chaos in %s at 0x%05X: 0x%02X -> 0x%02X (type %d)\n",
+              target.description, addr, original_value, new_value, chaos_type);
+    }
   }
-  fprintf(stderr, "Game logic variable flipping complete!\n");
+
+  // Also target some specific patterns that are common in games
+
+  // Look for byte values that might be counters/lives (1-9) and mess with them
+  fprintf(stderr, "Hunting for counter-like values...\n");
+  for (int hunt = 0; hunt < 20; hunt++)
+  {
+    int addr = 0xFF0000 + (rand() % 0x8000);
+    unsigned char value = belongs.misc_readbyte(addr);
+
+    // If it looks like a counter, lives, or small number
+    if (value >= 1 && value <= 99)
+    {
+      unsigned char new_value = (rand() % 2) ? 0 : 255; // Set to 0 or max
+      belongs.misc_writebyte(addr, new_value);
+      corruptions_made++;
+      fprintf(stderr, "Found counter-like value at 0x%05X: %d -> %d\n",
+              addr, value, new_value);
+    }
+  }
+
+  // Look for boolean-like values (0x00, 0x01) and flip them
+  fprintf(stderr, "Hunting for boolean-like flags...\n");
+  for (int hunt = 0; hunt < 30; hunt++)
+  {
+    int addr = 0xFF0000 + (rand() % 0x8000);
+    unsigned char value = belongs.misc_readbyte(addr);
+
+    // If it looks like a boolean flag
+    if (value == 0x00 || value == 0x01)
+    {
+      unsigned char new_value = value ? 0x00 : 0xFF; // Flip and amplify
+      belongs.misc_writebyte(addr, new_value);
+      corruptions_made++;
+      fprintf(stderr, "Flipped boolean-like flag at 0x%05X: %d -> %d\n",
+              addr, value, new_value);
+    }
+  }
+
+  fprintf(stderr, "Intelligent game logic chaos complete! Applied %d corruptions.\n", corruptions_made);
 }
