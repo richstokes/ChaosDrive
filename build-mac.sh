@@ -131,7 +131,7 @@ build_project() {
     # Use 8 parallel jobs (leaving 2 cores free for system responsiveness)
     # arch -x86_64 make -j8 # Seems to not work?
     # arch -x86_64 make
-    make
+    make -j8
     
     print_success "Build completed successfully!"
 }
