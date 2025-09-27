@@ -121,7 +121,7 @@ Drag a ROM file onto the dgen.exe
 - Key G: Scramble critical RAM areas
 - Key H: Force-Increment the program counter a random small amount
 - Key J: Corrupt a random register
-- Key /: Flip random game variables in RAM (e.g. lives, score, position, etc)
+- Key /: Attempt to flip random game variables in RAM (e.g. lives, score, position, etc)
 
 ## Contributing
 
