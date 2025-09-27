@@ -1608,7 +1608,7 @@ retry:
 			0x00, // length of the image ID field
 			0x00, // whether a color map is included
 			0x02  // image type: uncompressed, true-color image
-				  // 5 bytes of color map specification
+				 // 5 bytes of color map specification
 		};
 
 		if (!fwrite(tmp, sizeof(tmp), 1, fp))
@@ -6805,6 +6805,8 @@ next_event:
 			static bool prev_h_key = false;
 			static bool prev_colon_key = false;
 			static bool prev_backslash_key = false;
+			static bool prev_comma_key = false;
+			static bool prev_period_key = false;
 
 			// Check for VRAM shift keys (O = up, L = down)
 			if (kpress[SDLK_o & 0xff])
@@ -6944,17 +6946,22 @@ next_event:
 				pd_message("FM channels/registers detuned");
 			}
 
-			// Check for audio memory shift keys (, = up, . = down)
-			if (kpress[SDLK_COMMA & 0xff])
+			// Check for audio memory shift keys (, = up, . = down) (single press)
+			bool current_comma_key = kpress[SDLK_COMMA & 0xff] != 0;
+			if (current_comma_key && !prev_comma_key)
 			{
 				megad.shift_audio_memory_up();
 				pd_message("Audio memory shifted up by 1 byte");
 			}
-			if (kpress[SDLK_PERIOD & 0xff])
+			prev_comma_key = current_comma_key;
+
+			bool current_period_key = kpress[SDLK_PERIOD & 0xff] != 0;
+			if (current_period_key && !prev_period_key)
 			{
 				megad.shift_audio_memory_down();
 				pd_message("Audio memory shifted down by 1 byte");
 			}
+			prev_period_key = current_period_key;
 
 			//
 			// CPU / General Mayhem
