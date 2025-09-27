@@ -6807,6 +6807,7 @@ next_event:
 			static bool prev_backslash_key = false;
 			static bool prev_comma_key = false;
 			static bool prev_period_key = false;
+			static bool prev_slash_key = false;
 
 			// Check for VRAM shift keys (O = up, L = down)
 			if (kpress[SDLK_o & 0xff])
@@ -6998,6 +6999,15 @@ next_event:
 				pd_message("Random register corrupted");
 			}
 			prev_j_key = current_j_key;
+
+			// Call flip_game_logic_variables when / key is pressed (single press)
+			bool current_slash_key = kpress[SDLK_SLASH & 0xff] != 0;
+			if (current_slash_key && !prev_slash_key)
+			{
+				megad.vdp.flip_game_logic_variables();
+				pd_message("Game logic variables flipped");
+			}
+			prev_slash_key = current_slash_key;
 
 			// // Call corrupt_audio_memory when C key is pressed
 			// if (kpress[SDLK_c & 0xff])

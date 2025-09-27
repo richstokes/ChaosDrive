@@ -1031,3 +1031,19 @@ void md_vdp::invert_vram_contents()
   }
   fprintf(stderr, "VRAM inversion complete!\n");
 }
+
+// Flip variables in memory used for game logic.
+void md_vdp::flip_game_logic_variables()
+{
+  fprintf(stderr, "Flipping game logic variables in 68k RAM...\n");
+  // Target a range of RAM likely to contain game state variables
+  for (int i = 0; i < 64; i++)
+  {
+    int addr = 0xFF2000 + (rand() % 0x1000); // Random address in a mid-RAM range
+    unsigned char original_value = belongs.misc_readbyte(addr);
+    unsigned char new_value = ~original_value; // Bitwise NOT to flip
+    belongs.misc_writebyte(addr, new_value);
+    fprintf(stderr, "Flipped variable at 0x%05X: 0x%02X -> 0x%02X\n", addr, original_value, new_value);
+  }
+  fprintf(stderr, "Game logic variable flipping complete!\n");
+}
