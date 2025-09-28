@@ -956,7 +956,7 @@ void md_vdp::program_counter_increment()
   uint32_t current_pc = le2h32(belongs.m68k_state.pc);
 
   // Corrupt the PC by adding a small random offset (must be even for 68k)
-  uint32_t increment = ((rand() % 16) + 1) * 2; // 2-32 bytes, even numbers only
+  uint32_t increment = ((rand() % 4) + 1) * 2; // 2-8 bytes, even numbers only
   uint32_t new_pc = current_pc + increment;
 
   // Modify the PC in the state structure
