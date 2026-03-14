@@ -184,6 +184,33 @@ void chaos_flip_vdp_mode(void)
     bitmap.viewport.changed |= 2;
 }
 
+void chaos_psg_noise_blast(void)
+{
+    /* Blast random noise through the SN76489 PSG chip.
+     * Write noise channel to white noise at random rate + max volume,
+     * and randomize tone channel frequencies and volumes. */
+    unsigned int clk = m68k.cycles;
+
+    /* Noise channel: white noise (bit 2 set), random rate */
+    int noise_mode = 0xE0 | 0x04 | (rand() % 4); /* 0xE4-0xE7 */
+    psg_write(clk, noise_mode);
+
+    /* Noise channel volume = max (attenuation 0) */
+    psg_write(clk, 0xF0);
+
+    /* Also blast random tones on channels 0-2 for extra chaos */
+    int ch;
+    for (ch = 0; ch < 3; ch++)
+    {
+        /* Set random frequency (latch + low 4 bits) */
+        psg_write(clk, 0x80 | (ch << 5) | (rand() % 16));
+        /* High 6 bits of frequency */
+        psg_write(clk, rand() % 64);
+        /* Random volume (0=loud, 0xF=silent) — bias toward loud */
+        psg_write(clk, 0x90 | (ch << 5) | (rand() % 6));
+    }
+}
+
 void chaos_reset(void)
 {
     cram_corruption_enabled = 0;

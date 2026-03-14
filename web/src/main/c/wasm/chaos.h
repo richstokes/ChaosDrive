@@ -42,6 +42,7 @@ void EMSCRIPTEN_KEEPALIVE chaos_flip_game_logic_variables(void);
 void EMSCRIPTEN_KEEPALIVE chaos_corrupt_vsram(void);
 void EMSCRIPTEN_KEEPALIVE chaos_hscroll_waviness(void);
 void EMSCRIPTEN_KEEPALIVE chaos_flip_vdp_mode(void);
+void EMSCRIPTEN_KEEPALIVE chaos_psg_noise_blast(void);
 
 /* Reset all chaos state */
 void EMSCRIPTEN_KEEPALIVE chaos_reset(void);

@@ -223,12 +223,13 @@ const sound = function(audioBuffer) {
 const chaosScan = function() {
     if(!gens) return;
 
-    // --- VSRAM / H-Scroll / CPU SR ---
+    // --- VSRAM / H-Scroll / VDP mode / PSG ---
     if(keys.has('KeyQ'))         { gens._chaos_corrupt_vsram();          showChaosMessage('VSRAM corrupted (melt)'); }
     if(keys.has('KeyW'))         { gens._chaos_hscroll_waviness();       showChaosMessage('H-scroll waviness'); }
     if(keys.has('KeyE') && !prevKeys.has('KeyE')) {
         gens._chaos_flip_vdp_mode(); showChaosMessage('VDP mode flipped');
     }
+    if(keys.has('KeyZ'))         { gens._chaos_psg_noise_blast();        showChaosMessage('PSG NOISE BLAST'); }
 
     // --- VRAM manipulation (hold-to-repeat) ---
     if(keys.has('KeyO'))         { gens._chaos_shift_vram_up();          showChaosMessage('VRAM shifted up'); }

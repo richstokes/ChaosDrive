@@ -90,6 +90,7 @@ This will install all dependencies (Emscripten SDK, npm packages, etc.), build t
 - **V** — Corrupt DAC/PCM data (hold to repeat)
 - **B** — Bitcrush audio (hold to repeat)
 - **N** — Detune FM channels (hold to repeat)
+- **Z** — PSG noise blast (hold to repeat)
 - **,** — Shift Z80 audio memory up\*
 - **.** — Shift Z80 audio memory down\*
 
