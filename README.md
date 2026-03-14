@@ -118,4 +118,4 @@ The original version of ChaosDrive, built as a fork of the [DGen](https://source
 
 ## Contributing
 
-PRs welcome.
+PRs welcome. We still have unused buttons! What other crazy effects can you come up with?
