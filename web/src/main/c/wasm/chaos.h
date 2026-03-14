@@ -38,6 +38,11 @@ void EMSCRIPTEN_KEEPALIVE chaos_program_counter_increment(void);
 void EMSCRIPTEN_KEEPALIVE chaos_random_register_corruption(void);
 void EMSCRIPTEN_KEEPALIVE chaos_flip_game_logic_variables(void);
 
+/* VSRAM / H-Scroll / CPU SR */
+void EMSCRIPTEN_KEEPALIVE chaos_corrupt_vsram(void);
+void EMSCRIPTEN_KEEPALIVE chaos_hscroll_waviness(void);
+void EMSCRIPTEN_KEEPALIVE chaos_flip_vdp_mode(void);
+
 /* Reset all chaos state */
 void EMSCRIPTEN_KEEPALIVE chaos_reset(void);
 

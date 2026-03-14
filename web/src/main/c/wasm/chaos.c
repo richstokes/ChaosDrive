@@ -17,6 +17,8 @@ static int cram_corruption_enabled = 0;
 static int fm_corruption_enabled = 0;
 static int cram_randomize_pending = 0;
 static int cram_shift_pending = 0;
+static int vsram_corrupt_pending = 0;
+static int hscroll_wave_pending = 0;
 
 /* ======================================================================== */
 /* Helper: mark VRAM dirty so the renderer picks up changes                 */
@@ -153,12 +155,43 @@ void chaos_disable_cram_corruption(void)
     cram_corruption_enabled = 0;
 }
 
+/* ======================================================================== */
+/* VSRAM / H-Scroll / CPU SR                                                */
+/* ======================================================================== */
+
+void chaos_corrupt_vsram(void)
+{
+    /* Defer to pre-render hook so it runs after VBlank DMA */
+    vsram_corrupt_pending = 1;
+}
+
+void chaos_hscroll_waviness(void)
+{
+    /* Defer to pre-render hook so it runs after VBlank DMA */
+    hscroll_wave_pending = 1;
+}
+
+void chaos_flip_vdp_mode(void)
+{
+    /* Flip random bits in VDP register 12 (display mode control).
+     * Bit 0: display width (32-col vs 40-col)
+     * Bits 1-2: interlace mode
+     * Bit 3: shadow/highlight mode
+     * This produces dramatic visual tearing and resolution glitches. */
+    int bits_to_flip = 1 << (rand() % 4); /* flip one of bits 0-3 */
+    reg[12] ^= bits_to_flip;
+    /* Signal that viewport/interlace may have changed */
+    bitmap.viewport.changed |= 2;
+}
+
 void chaos_reset(void)
 {
     cram_corruption_enabled = 0;
     fm_corruption_enabled = 0;
     cram_randomize_pending = 0;
     cram_shift_pending = 0;
+    vsram_corrupt_pending = 0;
+    hscroll_wave_pending = 0;
 }
 
 /* ======================================================================== */
@@ -567,6 +600,53 @@ void chaos_pre_render_hook(void)
     if (dirty)
     {
         mark_all_cram_dirty();
+    }
+
+    /* Apply deferred VSRAM corruption (after game's DMA has written scroll values) */
+    if (vsram_corrupt_pending)
+    {
+        int i;
+        int num_entries = 20; /* 20 column pairs */
+        for (i = 0; i < num_entries; i++)
+        {
+            int addr = i * 4;
+            int offset_a = (rand() % 33) - 16; /* -16 to +16 */
+            int offset_b = (rand() % 33) - 16;
+            int val_a = (vsram[addr] << 8) | vsram[addr + 1];
+            int val_b = (vsram[addr + 2] << 8) | vsram[addr + 3];
+            val_a = (val_a + offset_a) & 0x07FF;
+            val_b = (val_b + offset_b) & 0x07FF;
+            vsram[addr]     = (val_a >> 8) & 0xFF;
+            vsram[addr + 1] = val_a & 0xFF;
+            vsram[addr + 2] = (val_b >> 8) & 0xFF;
+            vsram[addr + 3] = val_b & 0xFF;
+        }
+        vsram_corrupt_pending = 0;
+    }
+
+    /* Apply deferred H-scroll waviness (after game's DMA has written scroll table) */
+    if (hscroll_wave_pending)
+    {
+        int line;
+        int num_lines = 224;
+        /* Force per-line h-scroll mode so our per-line offsets take effect */
+        hscroll_mask = 0xFF;
+        for (line = 0; line < num_lines; line++)
+        {
+            int addr = hscb + (line * 4);
+            if (addr + 3 >= 0x10000) break;
+            int offset = (rand() % 17) - 8; /* -8 to +8 */
+            int val_a = (vram[addr] << 8) | vram[addr + 1];
+            int val_b = (vram[addr + 2] << 8) | vram[addr + 3];
+            val_a = (val_a + offset) & 0x03FF;
+            val_b = (val_b + offset) & 0x03FF;
+            vram[addr]     = (val_a >> 8) & 0xFF;
+            vram[addr + 1] = val_a & 0xFF;
+            vram[addr + 2] = (val_b >> 8) & 0xFF;
+            vram[addr + 3] = val_b & 0xFF;
+        }
+        mark_all_vram_dirty();
+        hscroll_wave_pending = 0;
     }
 }
 

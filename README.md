@@ -57,8 +57,7 @@ This will install all dependencies (Emscripten SDK, npm packages, etc.), build t
 - **A, S, D** — A / B / C buttons
 - **Arrow keys** — D-Pad
 - **Enter** — Start
-- **Tab** — Reset console
-- **Z** — Reset (clears all hacks + resets emulator)
+- **Tab** — Reset (clears all hacks + resets emulator)
 
 ### VRAM Manipulation
 
@@ -79,6 +78,8 @@ This will install all dependencies (Emscripten SDK, npm packages, etc.), build t
 
 ### Sprite / Scroll Manipulation
 
+- **Q** — Corrupt VSRAM / vertical scroll (column melt effect, hold to repeat)
+- **W** — H-scroll waviness (per-line wobble effect, hold to repeat)
 - **R** — Fuzz scroll registers
 - **T** — Scramble sprite attributes (X, Y, tile index, etc)
 
@@ -102,6 +103,7 @@ This will install all dependencies (Emscripten SDK, npm packages, etc.), build t
 - **G** — Scramble critical RAM areas (hold to repeat)
 - **H** — Increment the program counter by a random amount
 - **J** — Corrupt a random CPU register
+- **E** — Flip VDP display mode (interlace, width, shadow/highlight)
 - **/** — Flip random game logic variables (lives, score, position, etc)
 
 ## Project Structure
