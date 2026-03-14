@@ -18,11 +18,11 @@ module.exports = {
         new webpack.EnvironmentPlugin({
             'ROM_PATH': 'rom/sonic2.bin',
             'PORT': 9000
+        }),
+        new webpack.NormalModuleReplacementPlugin(/^node:/, (resource) => {
+            resource.request = resource.request.replace(/^node:/, '');
         })
     ],
-    externals: {
-        fs: "empty"
-    },
     module: {
         rules: [
             {
@@ -50,9 +50,10 @@ module.exports = {
         modules: [
             "node_modules"
         ],
-        "fallback": {
+    "fallback": {
             "path": require.resolve("path-browserify"),
-            "process": require.resolve("process/browser")
+            "process": require.resolve("process/browser"),
+            "fs": false
         }
     },
     performance: {

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.5)
 
 include(./cmake/macros.cmake)
 project(genplus C CXX)
@@ -87,6 +87,7 @@ add_compile_flags(LD
     "-s MODULARIZE=1"
     "-s TOTAL_MEMORY=32MB"
     "-s FILESYSTEM=0"
+    "-s EXPORTED_RUNTIME_METHODS=['HEAPU8','HEAPF32']"
 )
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ../src/main/js)
