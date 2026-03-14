@@ -132,6 +132,7 @@ wasm().then(function(module) {
     gens = module;
     gens._init();
     console.log(gens);
+
     // listen for ROM file selection
     document.getElementById('rom-file').addEventListener('change', function(e) {
         let file = e.target.files[0];
@@ -143,6 +144,7 @@ wasm().then(function(module) {
         };
         reader.readAsArrayBuffer(file);
     });
+
 });
 
 const start = function() {
