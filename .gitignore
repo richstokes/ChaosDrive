@@ -12,7 +12,7 @@ stderr.txt
 desktop.ini
 *.zip
 dgen-portable/*
-
+.emsdk/
 
 # Prerequisites
 *.d
