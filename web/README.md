@@ -1,110 +1,72 @@
-# wasm-genplus
+# ChaosDrive Web
 
-![](https://github.com/h1romas4/wasm-genplus/workflows/Emscripten%20CI/badge.svg)
+A fork of [wasm-genplus](https://github.com/h1romas4/wasm-genplus) customized to apply Chaos Drive hacks to the Genesis-Plus-GX emulator.
 
-[Genesis-Plus-GX](https://github.com/ekeeke/Genesis-Plus-GX) WebAssembly porting
+## About This Fork
 
-![](https://github.com/h1romas4/wasm-genplus/blob/master/assets/ipad-wasm.jpg)
+This is a customized version of the wasm-genplus WebAssembly port of Genesis-Plus-GX, enhanced with Chaos Drive hacks for enhanced gameplay and compatibility.
 
-## Build with Local
+## Quick Start
 
-### Require
+### Run Locally
 
-* [Emscripten SDK](https://emscripten.org/docs/getting_started/downloads.html)
-
-```
-$ source ./emsdk_env.sh
-Setting up EMSDK environment (suppress these messages with EMSDK_QUIET=1)
-Adding directories to PATH:
-PATH += /home/hiromasa/devel/toolchain/emsdk
-PATH += /home/hiromasa/devel/toolchain/emsdk/upstream/emscripten
-
-Setting environment variables:
-PATH = /home/hiromasa/devel/toolchain/emsdk:/home/hiromasa/devel/toolchain/emsdk/upstream/emscripten:/home/hiromasa/devel/toolchain/appimage:/home/hiromasa/.wasmtime/bin:/home/hiromasa/devel/msx/z88dk/bin:/home/hiromasa/.wasmer/bin:/home/hiromasa/.local/bin:/home/hiromasa/.cargo/bin:/home/hiromasa/.sdkman/candidates/java/current/bin:/home/hiromasa/.sdkman/candidates/groovy/current/bin:/home/hiromasa/.sdkman/candidates/gradle/current/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/hiromasa/.dotnet/tools
-EMSDK = /home/hiromasa/devel/toolchain/emsdk
-EMSDK_NODE = /home/hiromasa/devel/toolchain/emsdk/node/16.20.0_64bit/bin/node
-
-$ emcc -v
-emcc (Emscripten gcc/clang-like replacement + linker emulating GNU ld) 3.1.57 (1df9c1977b49926c1efca672c31414da45c0c7bb)
-clang version 19.0.0git (https:/github.com/llvm/llvm-project ccdebbae4d77d3efc236af92c22941de5d437e01)
-Target: wasm32-unknown-emscripten
-Thread model: posix
-InstalledDir: /home/hiromasa/devel/toolchain/emsdk/upstream/bin
+```bash
+./run.sh
 ```
 
-### Build
+This will:
+1. Set up your environment (Emscripten SDK if needed)
+2. Build the project
+3. Start a local development server
 
-**Emscripten**
+Then open http://localhost:9000 in your browser.
 
+### Deploy to Netlify
+
+```bash
+./deploy.sh
 ```
-git clone --recursive https://github.com/h1romas4/wasm-genplus.git
-cd wasm-genplus
+
+This script handles the full build and deployment process to Netlify.
+
+## Manual Build
+
+See [README-original.md](README-original.md) for detailed build instructions from the original wasm-genplus project.
+
+### Requirements
+
+- [Emscripten SDK](https://emscripten.org/docs/getting_started/downloads.html)
+- Node.js and npm
+
+### Build Steps
+
+```bash
+# Emscripten compilation
 mkdir build && cd build
 emcmake cmake ..
 emmake make
-```
 
-**webpack**
-
-```
+# Webpack bundling
 cd ..
 npm install
 npm run start
 ```
 
-**Setting**
+## Configuration
 
-`.env`
-
-```
-ROM_PATH="rom/sonic2.bin"
-PORT=9000
-```
-
-**Play**
-
-(recommended) Firefox or Safari
-
-```
-http://localhost:9000
-```
-
-## Build with Gitpod
-
-**Open in Gitpod**
-
-[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/h1romas4/wasm-genplus)
-
-**Gitpod terminal:**
-
-```
-mkdir build && cd build
-emcmake cmake ..
-emmake make
-```
-
-**Setting**
-
-`.env`
+Set ROM path and port in `.env`:
 
 ```
 ROM_PATH="rom/sonic2.bin"
 PORT=9000
 ```
 
-**Play**
+## Credits
 
-```
-cd ..
-npm run server
-```
-
-![](https://github.com/h1romas4/wasm-genplus/blob/master/assets/gitpod-01.jpg)
+- Original project: [wasm-genplus](https://github.com/h1romas4/wasm-genplus) by h1romas4
+- Emulator: [Genesis-Plus-GX](https://github.com/ekeeke/Genesis-Plus-GX)
+- Chaos Drive hacks customization
 
 ## License
 
 [Genesis-Plus-GX](https://github.com/ekeeke/Genesis-Plus-GX/blob/master/LICENSE.txt) License
-
-## Thanks!
-
-[Genesis-Plus-GX](https://github.com/ekeeke/Genesis-Plus-GX)
