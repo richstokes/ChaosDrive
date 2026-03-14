@@ -98,10 +98,11 @@
   *out++ = PIXEL(r,g,b); \
 }
 
+/* WASM: 2x scale blitter with RGB -> ABGR swizzle for Canvas ImageData */
 #ifdef WASM_GENPLUS
 #define CUSTOM_BLITTER(line, width, pixel, src)  \
 { \
-    int w = width; \
+    int pitch_px = bitmap.pitch / (int)sizeof(PIXEL_OUT_T); \
     PIXEL_OUT_T *dst = ((PIXEL_OUT_T *)&bitmap.data[(line * 2 * bitmap.pitch)]); \
     do \
     { \
@@ -110,12 +111,11 @@
         uint8_t g = (px & 0x00ff00) >> 8; \
         uint8_t b = (px & 0x0000ff) >> 0; \
         PIXEL_OUT_T pset = (0xff << 24) | (b << 16) | (g << 8) | (r); \
-        *dst = pset; \
-        *(dst + w * bitmap.pitch) = pset; \
-        dst++; \
-        *dst = pset; \
-        *(dst + w * bitmap.pitch) = pset; \
-        dst++; \
+        dst[0] = pset; \
+        dst[1] = pset; \
+        dst[pitch_px]     = pset; \
+        dst[pitch_px + 1] = pset; \
+        dst += 2; \
     } \
     while (--width); \
 }
