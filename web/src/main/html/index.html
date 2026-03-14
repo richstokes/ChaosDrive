@@ -50,21 +50,8 @@ body {
     display: none;
 }
 #controls-toggle {
-    position: fixed;
     top: 10px;
     right: 10px;
-    z-index: 1000;
-    background: rgba(0,0,0,0.7);
-    color: #0f0;
-    border: 1px solid #0f0;
-    border-radius: 4px;
-    padding: 6px 12px;
-    cursor: pointer;
-    font-family: monospace;
-    font-size: 13px;
-}
-#controls-toggle:hover {
-    background: rgba(0,255,0,0.15);
 }
 #controls-panel {
     position: fixed;
@@ -119,11 +106,90 @@ body {
 #controls-panel .row .desc {
     color: #999;
 }
+.toolbar-btn {
+    position: fixed;
+    z-index: 1000;
+    background: rgba(0,0,0,0.7);
+    color: #0f0;
+    border: 1px solid #0f0;
+    border-radius: 4px;
+    padding: 6px 12px;
+    cursor: pointer;
+    font-family: monospace;
+    font-size: 13px;
+}
+.toolbar-btn:hover {
+    background: rgba(0,255,0,0.15);
+}
+#screen-toggle {
+    top: 10px;
+    right: 130px;
+}
+#screen-panel {
+    position: fixed;
+    top: 42px;
+    right: 130px;
+    z-index: 999;
+    background: rgba(0,0,0,0.88);
+    color: #ccc;
+    border: 1px solid #444;
+    border-radius: 6px;
+    padding: 14px 18px;
+    font-family: monospace;
+    font-size: 12px;
+    display: none;
+}
+#screen-panel.visible {
+    display: block;
+}
+#screen-panel h2 {
+    margin: 0 0 8px 0;
+    font-size: 14px;
+    color: #ff0;
+    border-bottom: 1px solid #444;
+    padding-bottom: 4px;
+}
+#screen-panel button {
+    display: block;
+    width: 100%;
+    margin: 4px 0;
+    padding: 6px 14px;
+    background: #222;
+    color: #0f0;
+    border: 1px solid #444;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: monospace;
+    font-size: 12px;
+    text-align: left;
+}
+#screen-panel button:hover {
+    background: #333;
+    border-color: #0f0;
+}
+#screen-panel button.active {
+    border-color: #0f0;
+    background: rgba(0,255,0,0.12);
+}
+#screen.fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw !important;
+    height: 100vh !important;
+}
 </style>
 <title>ChaosDrive</title>
 </head>
 <body>
-<button id="controls-toggle">Controls [?]</button>
+<button id="screen-toggle" class="toolbar-btn">Screen</button>
+<div id="screen-panel">
+    <h2>Screen Size</h2>
+    <button data-size="default" class="active">Default (640&times;480)</button>
+    <button data-size="double">Double (1280&times;960)</button>
+    <button data-size="fullscreen">Fullscreen</button>
+</div>
+<button id="controls-toggle" class="toolbar-btn">Controls [?]</button>
 <div id="controls-panel">
     <h2>ChaosDrive Controls</h2>
 
@@ -181,6 +247,66 @@ body {
         panel.classList.toggle('visible');
         this.textContent = panel.classList.contains('visible') ? 'Close [X]' : 'Controls [?]';
     });
+
+    (function() {
+        var screenToggle = document.getElementById('screen-toggle');
+        var screenPanel = document.getElementById('screen-panel');
+        var canvas = document.getElementById('screen');
+        var buttons = screenPanel.querySelectorAll('button[data-size]');
+
+        screenToggle.addEventListener('click', function() {
+            screenPanel.classList.toggle('visible');
+        });
+
+        function setActive(btn) {
+            buttons.forEach(function(b) { b.classList.remove('active'); });
+            btn.classList.add('active');
+        }
+
+        buttons.forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                var size = this.getAttribute('data-size');
+                setActive(this);
+                canvas.classList.remove('fullscreen');
+                canvas.style.width = '';
+                canvas.style.height = '';
+
+                if (document.fullscreenElement) {
+                    document.exitFullscreen().catch(function(){});
+                }
+
+                if (size === 'default') {
+                    canvas.style.width = '640px';
+                    canvas.style.height = '480px';
+                } else if (size === 'double') {
+                    canvas.style.width = '1280px';
+                    canvas.style.height = '960px';
+                } else if (size === 'fullscreen') {
+                    canvas.classList.add('fullscreen');
+                    if (canvas.requestFullscreen) {
+                        canvas.requestFullscreen().catch(function() {
+                            /* fullscreen API denied, CSS fallback is already applied */
+                        });
+                    }
+                }
+
+                screenPanel.classList.remove('visible');
+            });
+        });
+
+        document.addEventListener('fullscreenchange', function() {
+            if (!document.fullscreenElement) {
+                canvas.classList.remove('fullscreen');
+                /* reset to default look when exiting fullscreen via Esc */
+                var activeBtn = screenPanel.querySelector('button.active');
+                if (activeBtn && activeBtn.getAttribute('data-size') === 'fullscreen') {
+                    setActive(screenPanel.querySelector('button[data-size="default"]'));
+                    canvas.style.width = '640px';
+                    canvas.style.height = '480px';
+                }
+            }
+        });
+    })();
 </script>
 </body>
 </html>
