@@ -248,14 +248,14 @@ void chaos_sprite_attribute_scramble(void)
     {
         int sprite_addr = sprite_table_base + (i * sprite_entry_size);
         uint8 y_high = vram[sprite_addr + 0];
-        uint8 y_low  = vram[sprite_addr + 1];
+        uint8 y_low = vram[sprite_addr + 1];
         uint8 pattern_high = vram[sprite_addr + 4];
-        uint8 pattern_low  = vram[sprite_addr + 5];
+        uint8 pattern_low = vram[sprite_addr + 5];
         uint8 x_high = vram[sprite_addr + 6];
-        uint8 x_low  = vram[sprite_addr + 7];
+        uint8 x_low = vram[sprite_addr + 7];
 
         int has_position = (y_high != 0 || y_low != 0 || x_high != 0 || x_low != 0);
-        int has_pattern  = (pattern_high != 0 || pattern_low != 0);
+        int has_pattern = (pattern_high != 0 || pattern_low != 0);
         int reasonable_y = (y_high < 8);
 
         if ((has_position || has_pattern) && reasonable_y)
@@ -407,20 +407,24 @@ void chaos_detune_fm_registers(void)
         int freq_low_reg = 0xA0 + ch_offset;
         int detune = (rand() % 64) - 32;
         int new_val = detune; /* Just add random offset; wraps naturally via uint8 */
-        if (new_val < 0) new_val = 0;
-        if (new_val > 255) new_val = 255;
+        if (new_val < 0)
+            new_val = 0;
+        if (new_val > 255)
+            new_val = 255;
 
         /* Select register, then write data */
-        YM2612Write(bank, freq_low_reg);     /* address write */
-        YM2612Write(bank + 1, new_val);       /* data write */
+        YM2612Write(bank, freq_low_reg); /* address write */
+        YM2612Write(bank + 1, new_val);  /* data write */
 
         /* Frequency high byte register (0xA4 + ch_offset) */
         {
             int freq_high_reg = 0xA4 + ch_offset;
             int detune_hi = (rand() % 16) - 8;
             int new_hi = detune_hi;
-            if (new_hi < 0) new_hi = 0;
-            if (new_hi > 63) new_hi = 63;
+            if (new_hi < 0)
+                new_hi = 0;
+            if (new_hi > 63)
+                new_hi = 63;
 
             YM2612Write(bank, freq_high_reg);
             YM2612Write(bank + 1, new_hi);
@@ -503,7 +507,11 @@ void chaos_random_register_corruption(void)
 void chaos_flip_game_logic_variables(void)
 {
     /* Target common variable locations used by Genesis games */
-    struct { int base_addr; int range; } targets[] = {
+    struct
+    {
+        int base_addr;
+        int range;
+    } targets[] = {
         {0x0000, 0x400},
         {0x0400, 0x400},
         {0x0800, 0x800},
@@ -513,8 +521,7 @@ void chaos_flip_game_logic_variables(void)
         {0x3000, 0x1000},
         {0x8000, 0x1000},
         {0xC000, 0x2000},
-        {0xF000, 0x800}
-    };
+        {0xF000, 0x800}};
     int num_targets = 10;
     int area, i, addr, hunt;
 
@@ -527,7 +534,8 @@ void chaos_flip_game_logic_variables(void)
             int chaos_type;
 
             addr = targets[area].base_addr + (rand() % targets[area].range);
-            if (addr >= 0x10000) continue;
+            if (addr >= 0x10000)
+                continue;
             value = work_ram[addr];
 
             if (value == 0x00 || value == 0xFF)
@@ -536,18 +544,30 @@ void chaos_flip_game_logic_variables(void)
             chaos_type = rand() % 6;
             switch (chaos_type)
             {
-            case 0: new_value = ~value; break;
+            case 0:
+                new_value = ~value;
+                break;
             case 1:
             {
                 uint8 bad_values[] = {0xFF, 0x80, 0x7F, 0x01, 0x00};
                 new_value = bad_values[rand() % 5];
                 break;
             }
-            case 2: new_value = value + (rand() % 32) + 1; break;
-            case 3: new_value = value * 2; break;
-            case 4: new_value = value | (1 << (rand() % 8)); break;
-            case 5: new_value = value & ~(1 << (rand() % 8)); break;
-            default: new_value = ~value; break;
+            case 2:
+                new_value = value + (rand() % 32) + 1;
+                break;
+            case 3:
+                new_value = value * 2;
+                break;
+            case 4:
+                new_value = value | (1 << (rand() % 8));
+                break;
+            case 5:
+                new_value = value & ~(1 << (rand() % 8));
+                break;
+            default:
+                new_value = ~value;
+                break;
             }
 
             work_ram[addr] = new_value;
@@ -643,7 +663,7 @@ void chaos_pre_render_hook(void)
             int val_b = (vsram[addr + 2] << 8) | vsram[addr + 3];
             val_a = (val_a + offset_a) & 0x07FF;
             val_b = (val_b + offset_b) & 0x07FF;
-            vsram[addr]     = (val_a >> 8) & 0xFF;
+            vsram[addr] = (val_a >> 8) & 0xFF;
             vsram[addr + 1] = val_a & 0xFF;
             vsram[addr + 2] = (val_b >> 8) & 0xFF;
             vsram[addr + 3] = val_b & 0xFF;
@@ -661,13 +681,14 @@ void chaos_pre_render_hook(void)
         for (line = 0; line < num_lines; line++)
         {
             int addr = hscb + (line * 4);
-            if (addr + 3 >= 0x10000) break;
+            if (addr + 3 >= 0x10000)
+                break;
             int offset = (rand() % 17) - 8; /* -8 to +8 */
             int val_a = (vram[addr] << 8) | vram[addr + 1];
             int val_b = (vram[addr + 2] << 8) | vram[addr + 3];
             val_a = (val_a + offset) & 0x03FF;
             val_b = (val_b + offset) & 0x03FF;
-            vram[addr]     = (val_a >> 8) & 0xFF;
+            vram[addr] = (val_a >> 8) & 0xFF;
             vram[addr + 1] = val_a & 0xFF;
             vram[addr + 2] = (val_b >> 8) & 0xFF;
             vram[addr + 3] = val_b & 0xFF;
