@@ -1,0 +1,167 @@
+MIT License
+
+Copyright (c) 2025 Rich Stokes
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+
+================================================================================
+THIRD-PARTY LICENSES
+================================================================================
+
+ChaosDrive incorporates code from several upstream projects, each with their
+own licenses. The ChaosDrive-specific code (hack implementations, UI, build
+system) is MIT licensed as above. The emulator cores and their components
+retain their original licenses as described below.
+
+
+--------------------------------------------------------------------------------
+Genesis Plus GX (web/ emulator core)
+--------------------------------------------------------------------------------
+
+Copyright (C) 1998-2003 Charles Mac Donald (original code)
+Copyright (C) 2007-2018 Eke-Eke (Genesis Plus GX)
+
+Redistribution and use of this code or any derivative works are permitted
+provided that the following conditions are met:
+
+  - Redistributions may not be sold, nor may they be used in a commercial
+    product or activity.
+
+  - Redistributions that are modified from the original source must include the
+    complete source code, including the source code for all components used by a
+    binary built from the modified sources. However, as a special exception, the
+    source code distributed need not include anything that is normally distributed
+    (in either source or binary form) with the major components (compiler, kernel,
+    and so on) of the operating system on which the executable runs, unless that
+    component itself accompanies the executable.
+
+  - Redistributions must reproduce the above copyright notice, this list of
+    conditions and the following disclaimer in the documentation and/or other
+    materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+
+The web version is based on wasm-genplus by nicoya:
+  https://github.com/nicoya/wasm-genplus
+
+
+--------------------------------------------------------------------------------
+DGen (original_attempt/ emulator core)
+--------------------------------------------------------------------------------
+
+Copyright (c) 1998, 1999 Dave.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+  1. Redistributions of source code must retain the above copyright notice,
+     this list of conditions and the following disclaimer.
+  2. Redistributions in binary form must reproduce the above copyright notice,
+     this list of conditions and the following disclaimer in the documentation
+     and/or other materials provided with the distribution.
+  3. Neither the name of the authors nor the names of their contributors may
+     be used to endorse or promote products derived from this software without
+     specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE AUTHORS AND CONTRIBUTORS "AS IS" AND ANY
+EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE AUTHORS OR CONTRIBUTORS BE LIABLE FOR ANY
+DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+See original_attempt/COPYING for additional sub-component licenses (Musashi,
+StarScream, MZ80, CZ80, HQx, Scale2x, Cyclone, DrZ80, DZ80).
+
+
+--------------------------------------------------------------------------------
+Musashi M68K emulator
+--------------------------------------------------------------------------------
+
+Copyright (C) 1998-2001 Karl Stenerud.
+
+Free for any non-commercial purpose. Contact the author for commercial
+licensing. See web/src/main/c/core/m68k/readme.txt for details.
+
+
+--------------------------------------------------------------------------------
+Z80 emulator
+--------------------------------------------------------------------------------
+
+Copyright (C) Juergen Buchmueller.
+
+Released as freeware for non-commercial purposes. Redistribution permitted
+with credit. Contact pullmoll@t-online.de for commercial use.
+See web/src/main/c/core/z80/z80.c for full terms.
+
+
+--------------------------------------------------------------------------------
+YM2612/YM3438 FM synthesis
+--------------------------------------------------------------------------------
+
+YM2612 emulator:
+  Copyright (C) 2001-2003 Jarek Burczynski
+  Copyright (C) 1998 Tatsuyuki Satoh
+  Additional code by Eke-Eke for Genesis Plus GX.
+
+Nuked OPN2 (YM3438) emulator:
+  Copyright (C) 2017 Alexey Khokholov (Nuke.YKT)
+  Same non-commercial redistribution license as Genesis Plus GX (see above).
+
+
+--------------------------------------------------------------------------------
+blip_buf audio resampling
+--------------------------------------------------------------------------------
+
+Copyright (C) 2003-2009 Shay Green.
+
+Licensed under the GNU Lesser General Public License, version 2.1 or later.
+See web/src/main/c/core/sound/blip_buf.c for details.
+
+
+--------------------------------------------------------------------------------
+NTSC video filters
+--------------------------------------------------------------------------------
+
+Licensed under the GNU Lesser General Public License, version 2.1.
+See web/src/main/c/core/ntsc/license.txt for the full LGPL text.
+
+
+--------------------------------------------------------------------------------
+Tremor (Ogg Vorbis decoder)
+--------------------------------------------------------------------------------
+
+Copyright (c) 2002, Xiph.org Foundation.
+
+BSD license. See web/src/main/c/core/tremor/COPYING for full terms.
