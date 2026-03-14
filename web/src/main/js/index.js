@@ -84,12 +84,29 @@ const message = function(mes) {
     canvasContext.fillStyle = "#0f0";
 };
 
+const initAudio = function() {
+    if(audioContext) return;
+    audioContext = new (window.AudioContext || window.webkitAudioContext)({
+        sampleRate: SOUND_FREQUENCY
+    });
+    // iOS dummy audio to unlock audio context
+    let audioBuffer = audioContext.createBuffer(2, SAMPLING_PER_FPS, SOUND_FREQUENCY);
+    let dummy = new Float32Array(SAMPLING_PER_FPS);
+    dummy.fill(0);
+    audioBuffer.getChannelData(0).set(dummy);
+    audioBuffer.getChannelData(1).set(dummy);
+    sound(audioBuffer);
+};
+
 const loadRom = function(bytes) {
     romdata = new Uint8Array(gens.HEAPU8.buffer, gens._get_rom_buffer_ref(bytes.byteLength), bytes.byteLength);
     romdata.set(new Uint8Array(bytes));
     canvas.style.display = 'block';
-    message("TOUCH HERE!");
     initialized = true;
+    // init audio (user gesture from file picker satisfies browser policy)
+    initAudio();
+    // start immediately
+    start();
 };
 
 // canvas setting
@@ -104,24 +121,6 @@ const loadRom = function(bytes) {
     }
     canvasContext = canvas.getContext('2d');
     canvasImageData = canvasContext.createImageData(CANVAS_WIDTH, CANVAS_HEIGHT);
-    // for iOS audio context
-    let click = function() {
-        canvas.removeEventListener('click', click, false);
-        // audio init
-        audioContext = new (window.AudioContext || window.webkitAudioContext)({
-            sampleRate: SOUND_FREQUENCY
-        });
-        // for iOS dummy audio
-        let audioBuffer = audioContext.createBuffer(2, SAMPLING_PER_FPS, SOUND_FREQUENCY);
-        let dummy = new Float32Array(SAMPLING_PER_FPS);
-        dummy.fill(0);
-        audioBuffer.getChannelData(0).set(dummy);
-        audioBuffer.getChannelData(1).set(dummy);
-        sound(audioBuffer);
-        // start
-        start();
-    };
-    canvas.addEventListener('click', click, false);
     // for fps print
     fps = 0;
     frame = FPS;
