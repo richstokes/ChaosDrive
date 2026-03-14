@@ -3,6 +3,7 @@
 #include "fileio.h"
 #include "md_ntsc.h"
 #include "sms_ntsc.h"
+#include "chaos.h"
 
 #define SOUND_FREQUENCY 44100
 #define SOUND_SAMPLES_SIZE 2048
@@ -68,6 +69,7 @@ float_t convert_sample_i2f(int16_t i) {
 }
 
 void EMSCRIPTEN_KEEPALIVE tick(void) {
+    chaos_per_frame_update();
     system_frame_gen(0);
 }
 

@@ -60,6 +60,7 @@ add_source_files(
     ./src/main/c/wasm/fileio.c
     ./src/main/c/wasm/scrc32.c
     ./src/main/c/wasm/wasm.c
+    ./src/main/c/wasm/chaos.c
 )
 
 # source map option

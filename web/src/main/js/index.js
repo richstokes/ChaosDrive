@@ -43,10 +43,25 @@ let isSafari = false;
 
 // keyboard state
 const keys = new Set();
+const prevKeys = new Set(); // for single-press detection
+
+// ChaosDrive status message
+let chaosMessage = '';
+let chaosMessageTimer = 0;
+function showChaosMessage(msg) {
+    chaosMessage = msg;
+    chaosMessageTimer = 120; // ~2 seconds at 60fps
+}
+
 document.addEventListener('keydown', function(e) {
     keys.add(e.code);
     // prevent arrow keys / tab from scrolling
     if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Tab'].includes(e.code)) {
+        e.preventDefault();
+    }
+    // Prevent default for chaos keys too
+    if(['BracketLeft','BracketRight','Backslash','Slash','Semicolon',
+        'Comma','Period'].includes(e.code)) {
         e.preventDefault();
     }
     if(e.code === 'KeyZ') {
@@ -204,12 +219,87 @@ const sound = function(audioBuffer) {
     }
 };
 
+// ChaosDrive: process chaos key bindings each frame
+const chaosScan = function() {
+    if(!gens) return;
+
+    // --- VRAM manipulation (hold-to-repeat) ---
+    if(keys.has('KeyO'))         { gens._chaos_shift_vram_up();          showChaosMessage('VRAM shifted up'); }
+    if(keys.has('KeyL'))         { gens._chaos_shift_vram_down();        showChaosMessage('VRAM shifted down'); }
+    if(keys.has('KeyK'))         { gens._chaos_shift_vram_left();        showChaosMessage('VRAM shifted left'); }
+    if(keys.has('Semicolon'))    { gens._chaos_shift_vram_right();       showChaosMessage('VRAM shifted right'); }
+    if(keys.has('KeyI'))         { gens._chaos_shift_vram_down_random(); showChaosMessage('VRAM shifted random'); }
+    if(keys.has('KeyP'))         { gens._chaos_corrupt_vram_one_byte();  showChaosMessage('VRAM corrupted (1 byte)'); }
+
+    // --- VRAM invert (single press) ---
+    if(keys.has('Backslash') && !prevKeys.has('Backslash')) {
+        gens._chaos_invert_vram_contents(); showChaosMessage('VRAM inverted');
+    }
+
+    // --- CRAM (hold-to-repeat for [ and ]) ---
+    if(keys.has('BracketLeft'))  { gens._chaos_randomize_cram();  showChaosMessage('CRAM randomized'); }
+    if(keys.has('BracketRight')) { gens._chaos_shift_cram_up();   showChaosMessage('CRAM shifted up'); }
+
+    // --- CRAM persistent corruption (single press) ---
+    if(keys.has('KeyY') && !prevKeys.has('KeyY')) {
+        gens._chaos_enable_cram_corruption(); showChaosMessage('CRAM corruption ON');
+    }
+    if(keys.has('KeyU') && !prevKeys.has('KeyU')) {
+        gens._chaos_disable_cram_corruption(); showChaosMessage('CRAM corruption OFF');
+    }
+
+    // --- Sprite/Scroll (single press) ---
+    if(keys.has('KeyR') && !prevKeys.has('KeyR')) {
+        gens._chaos_scroll_register_fuzzing(); showChaosMessage('Scroll registers fuzzed');
+    }
+    if(keys.has('KeyT') && !prevKeys.has('KeyT')) {
+        gens._chaos_sprite_attribute_scramble(); showChaosMessage('Sprite attributes scrambled');
+    }
+
+    // --- Audio (single press for X, C; hold for V, B, N) ---
+    if(keys.has('KeyX') && !prevKeys.has('KeyX')) {
+        gens._chaos_enable_fm_corruption(); showChaosMessage('FM corruption ON');
+    }
+    if(keys.has('KeyC') && !prevKeys.has('KeyC')) {
+        gens._chaos_disable_fm_corruption(); showChaosMessage('FM corruption OFF');
+    }
+    if(keys.has('KeyV'))         { gens._chaos_corrupt_dac_data();       showChaosMessage('DAC data corrupted'); }
+    if(keys.has('KeyB'))         { gens._chaos_bitcrush_audio_memory();  showChaosMessage('Audio bitcrushed'); }
+    if(keys.has('KeyN'))         { gens._chaos_detune_fm_registers();    showChaosMessage('FM detuned'); }
+
+    // --- Audio memory shift (single press) ---
+    if(keys.has('Comma') && !prevKeys.has('Comma')) {
+        gens._chaos_shift_audio_memory_up(); showChaosMessage('Audio memory shifted up');
+    }
+    if(keys.has('Period') && !prevKeys.has('Period')) {
+        gens._chaos_shift_audio_memory_down(); showChaosMessage('Audio memory shifted down');
+    }
+
+    // --- General mayhem (F, G hold; H, J, / single press) ---
+    if(keys.has('KeyF'))         { gens._chaos_corrupt_68k_ram_one_byte(); showChaosMessage('68K RAM corrupted'); }
+    if(keys.has('KeyG'))         { gens._chaos_critical_ram_scramble();    showChaosMessage('Critical RAM scrambled'); }
+    if(keys.has('KeyH') && !prevKeys.has('KeyH')) {
+        gens._chaos_program_counter_increment(); showChaosMessage('PC incremented');
+    }
+    if(keys.has('KeyJ') && !prevKeys.has('KeyJ')) {
+        gens._chaos_random_register_corruption(); showChaosMessage('Register corrupted');
+    }
+    if(keys.has('Slash') && !prevKeys.has('Slash')) {
+        gens._chaos_flip_game_logic_variables(); showChaosMessage('Game variables flipped');
+    }
+
+    // Update previous key state
+    prevKeys.clear();
+    for(const k of keys) prevKeys.add(k);
+};
+
 const loop = function() {
     requestAnimationFrame(loop);
     now = Date.now();
     delta = now - then;
     if (delta > INTERVAL && !pause) {
         keyscan();
+        chaosScan();
         // update
         gens._tick();
         then = now - (delta % INTERVAL);
@@ -234,6 +324,14 @@ const loop = function() {
             audioBuffer.getChannelData(1).set(audio_r);
             sound(audioBuffer);
         }
+        // ChaosDrive status + FPS
+        canvasContext.font = "12px monospace";
+        canvasContext.fillStyle = "#0f0";
         canvasContext.fillText("FPS " + fps, 0, 480 - 16);
+        if(chaosMessageTimer > 0) {
+            canvasContext.fillStyle = "#ff0";
+            canvasContext.fillText(chaosMessage, 0, 480 - 32);
+            chaosMessageTimer--;
+        }
     }
 };
