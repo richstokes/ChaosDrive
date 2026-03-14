@@ -39,9 +39,13 @@ Results in a number of weird, wonderful, interesting, insane effects. The softwa
     <img src="original_attempt/screenshots/e3.jpg" alt="Ecco screenshot" width="400">
 </p>
 
-## Quick Start (Web Version)
+## Quick Start
 
-The easiest way to run ChaosDrive is the web version, which runs in your browser via WebAssembly:
+### Hosted version
+
+Visit **[chaosdrive.online](https://chaosdrive.online)**, load a ROM, and start glitching. Nothing to install.
+
+### Run locally
 
 ```bash
 cd web
