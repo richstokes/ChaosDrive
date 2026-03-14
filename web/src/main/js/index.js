@@ -1,8 +1,6 @@
 import wasm from './genplus.js';
 import './genplus.wasm';
-import process from 'process'
 
-const ROM_PATH = process.env['ROM_PATH'];
 const CANVAS_WIDTH = 640;
 const CANVAS_HEIGHT = 480;
 const SOUND_FREQUENCY = 44100;
@@ -52,6 +50,14 @@ const message = function(mes) {
     canvasContext.fillStyle = "#0f0";
 };
 
+const loadRom = function(bytes) {
+    romdata = new Uint8Array(gens.HEAPU8.buffer, gens._get_rom_buffer_ref(bytes.byteLength), bytes.byteLength);
+    romdata.set(new Uint8Array(bytes));
+    canvas.style.display = 'block';
+    message("TOUCH HERE!");
+    initialized = true;
+};
+
 // canvas setting
 (function() {
     canvas = document.getElementById('screen');
@@ -82,27 +88,27 @@ const message = function(mes) {
         start();
     };
     canvas.addEventListener('click', click, false);
-    // start screen
-    message("NOW LOADING");
     // for fps print
     fps = 0;
     frame = FPS;
     startTime = new Date().getTime();
 })();
 
+// init wasm module
 wasm().then(function(module) {
     gens = module;
-    // memory allocate
     gens._init();
     console.log(gens);
-    // load rom
-    fetch(ROM_PATH).then(response => response.arrayBuffer())
-    .then(bytes => {
-        // create buffer from wasm
-        romdata = new Uint8Array(gens.HEAPU8.buffer, gens._get_rom_buffer_ref(bytes.byteLength), bytes.byteLength);
-        romdata.set(new Uint8Array(bytes));
-        message("TOUCH HERE!");
-        initialized = true;
+    // listen for ROM file selection
+    document.getElementById('rom-file').addEventListener('change', function(e) {
+        let file = e.target.files[0];
+        if(!file) return;
+        let reader = new FileReader();
+        reader.onload = function() {
+            document.getElementById('rom-picker').style.display = 'none';
+            loadRom(reader.result);
+        };
+        reader.readAsArrayBuffer(file);
     });
 });
 
