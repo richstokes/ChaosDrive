@@ -49,15 +49,138 @@ body {
 #rom-file {
     display: none;
 }
+#controls-toggle {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    z-index: 1000;
+    background: rgba(0,0,0,0.7);
+    color: #0f0;
+    border: 1px solid #0f0;
+    border-radius: 4px;
+    padding: 6px 12px;
+    cursor: pointer;
+    font-family: monospace;
+    font-size: 13px;
+}
+#controls-toggle:hover {
+    background: rgba(0,255,0,0.15);
+}
+#controls-panel {
+    position: fixed;
+    top: 42px;
+    right: 10px;
+    z-index: 999;
+    background: rgba(0,0,0,0.88);
+    color: #ccc;
+    border: 1px solid #444;
+    border-radius: 6px;
+    padding: 14px 18px;
+    font-family: monospace;
+    font-size: 11px;
+    line-height: 1.6;
+    max-height: calc(100vh - 60px);
+    overflow-y: auto;
+    width: 320px;
+    display: none;
+}
+#controls-panel.visible {
+    display: block;
+}
+#controls-panel h2 {
+    margin: 0 0 6px 0;
+    font-size: 14px;
+    color: #ff0;
+    border-bottom: 1px solid #444;
+    padding-bottom: 4px;
+}
+#controls-panel h3 {
+    margin: 10px 0 2px 0;
+    font-size: 12px;
+    color: #0f0;
+}
+#controls-panel .key {
+    display: inline-block;
+    background: #333;
+    color: #fff;
+    border: 1px solid #666;
+    border-radius: 3px;
+    padding: 0 5px;
+    margin-right: 2px;
+    font-size: 11px;
+    min-width: 14px;
+    text-align: center;
+}
+#controls-panel .row {
+    display: flex;
+    justify-content: space-between;
+    padding: 1px 0;
+}
+#controls-panel .row .desc {
+    color: #999;
+}
 </style>
-<title>wasm-genplus</title>
+<title>ChaosDrive</title>
 </head>
 <body>
+<button id="controls-toggle">Controls [?]</button>
+<div id="controls-panel">
+    <h2>ChaosDrive Controls</h2>
+
+    <h3>Emulator</h3>
+    <div class="row"><span><span class="key">A</span><span class="key">S</span><span class="key">D</span></span><span class="desc">A / B / C buttons</span></div>
+    <div class="row"><span><span class="key">&larr;</span><span class="key">&uarr;</span><span class="key">&darr;</span><span class="key">&rarr;</span></span><span class="desc">D-Pad</span></div>
+    <div class="row"><span><span class="key">Enter</span></span><span class="desc">Start</span></div>
+    <div class="row"><span><span class="key">Tab</span></span><span class="desc">Reset console</span></div>
+    <div class="row"><span><span class="key">Z</span></span><span class="desc">Pause / Resume</span></div>
+
+    <h3>VRAM Manipulation</h3>
+    <div class="row"><span><span class="key">O</span></span><span class="desc">Shift VRAM up</span></div>
+    <div class="row"><span><span class="key">L</span></span><span class="desc">Shift VRAM down</span></div>
+    <div class="row"><span><span class="key">K</span></span><span class="desc">Shift VRAM left</span></div>
+    <div class="row"><span><span class="key">;</span></span><span class="desc">Shift VRAM right</span></div>
+    <div class="row"><span><span class="key">I</span></span><span class="desc">Shift VRAM random amount</span></div>
+    <div class="row"><span><span class="key">P</span></span><span class="desc">Corrupt one VRAM byte</span></div>
+    <div class="row"><span><span class="key">\</span></span><span class="desc">Invert all VRAM</span></div>
+
+    <h3>CRAM / Colors</h3>
+    <div class="row"><span><span class="key">[</span></span><span class="desc">Randomize CRAM</span></div>
+    <div class="row"><span><span class="key">]</span></span><span class="desc">Shift CRAM up</span></div>
+    <div class="row"><span><span class="key">Y</span></span><span class="desc">Persistent CRAM corruption ON</span></div>
+    <div class="row"><span><span class="key">U</span></span><span class="desc">Persistent CRAM corruption OFF</span></div>
+
+    <h3>Sprite / Scroll</h3>
+    <div class="row"><span><span class="key">R</span></span><span class="desc">Fuzz scroll registers</span></div>
+    <div class="row"><span><span class="key">T</span></span><span class="desc">Scramble sprite attributes</span></div>
+
+    <h3>Audio</h3>
+    <div class="row"><span><span class="key">X</span></span><span class="desc">Enable FM corruption</span></div>
+    <div class="row"><span><span class="key">C</span></span><span class="desc">Disable FM corruption</span></div>
+    <div class="row"><span><span class="key">V</span></span><span class="desc">Corrupt DAC/PCM data</span></div>
+    <div class="row"><span><span class="key">B</span></span><span class="desc">Bitcrush audio</span></div>
+    <div class="row"><span><span class="key">N</span></span><span class="desc">Detune FM channels</span></div>
+    <div class="row"><span><span class="key">,</span></span><span class="desc">Shift Z80 audio mem up</span></div>
+    <div class="row"><span><span class="key">.</span></span><span class="desc">Shift Z80 audio mem down</span></div>
+
+    <h3>General Mayhem &#x26A0;</h3>
+    <div class="row"><span><span class="key">F</span></span><span class="desc">Corrupt 68K RAM byte</span></div>
+    <div class="row"><span><span class="key">G</span></span><span class="desc">Scramble critical RAM</span></div>
+    <div class="row"><span><span class="key">H</span></span><span class="desc">Increment program counter</span></div>
+    <div class="row"><span><span class="key">J</span></span><span class="desc">Corrupt random register</span></div>
+    <div class="row"><span><span class="key">/</span></span><span class="desc">Flip game logic variables</span></div>
+</div>
 <div id="rom-picker">
-    <h1>Genesis / Mega Drive</h1>
+    <h1>ChaosDrive</h1>
     <label for="rom-file">Select ROM file&hellip;</label>
     <input type="file" id="rom-file" accept=".bin,.md,.smd,.gen,.sms">
 </div>
 <canvas id="screen"></canvas>
+<script>
+    document.getElementById('controls-toggle').addEventListener('click', function() {
+        var panel = document.getElementById('controls-panel');
+        panel.classList.toggle('visible');
+        this.textContent = panel.classList.contains('visible') ? 'Close [X]' : 'Controls [?]';
+    });
+</script>
 </body>
 </html>
