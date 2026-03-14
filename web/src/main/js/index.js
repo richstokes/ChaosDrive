@@ -41,6 +41,25 @@ let soundDelayTime = SAMPLING_PER_FPS * SOUND_DELAY_FRAME / SOUND_FREQUENCY;
 // for iOS
 let isSafari = false;
 
+// keyboard state
+const keys = new Set();
+document.addEventListener('keydown', function(e) {
+    keys.add(e.code);
+    // prevent arrow keys / tab from scrolling
+    if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Tab'].includes(e.code)) {
+        e.preventDefault();
+    }
+    if(e.code === 'KeyZ') {
+        pause = !pause;
+    }
+    if(e.code === 'Tab' && gens) {
+        gens._start();
+    }
+});
+document.addEventListener('keyup', function(e) {
+    keys.delete(e.code);
+});
+
 const message = function(mes) {
     canvasContext.clearRect(0, 0, canvas.width, canvas.height);
     canvasContext.font = "24px monospace";
@@ -136,40 +155,39 @@ const start = function() {
 
 const keyscan = function() {
     input.fill(0);
+    // gamepad
     let gamepads = navigator.getGamepads();
-    if(gamepads.length == 0) return;
-    let gamepad = gamepads[0];
-    if(gamepad == null) return;
-    if(isSafari) {
-        // for iOS Microsoft XBOX ONE
-        // UP - DOWN
-        input[7] = gamepad.axes[5] * -1;
-        // LEFT - RIGHT
-        input[6] = gamepad.axes[4];
-    } else if(gamepad.id.match(/Microsoft/)) {
-        // for Microsoft XBOX ONE
-        // axes 0 - 7
-        gamepad.axes.forEach((value, index) => {
-            input[index] = value;
-        });
-    } else {
-        // UP - DOWN
-        input[7] = gamepad.axes[1];
-        // LEFT - RIGHT
-        input[6] = gamepad.axes[0];
+    if(gamepads.length > 0) {
+        let gamepad = gamepads[0];
+        if(gamepad != null) {
+            if(isSafari) {
+                input[7] = gamepad.axes[5] * -1;
+                input[6] = gamepad.axes[4];
+            } else if(gamepad.id.match(/Microsoft/)) {
+                gamepad.axes.forEach((value, index) => {
+                    input[index] = value;
+                });
+            } else {
+                input[7] = gamepad.axes[1];
+                input[6] = gamepad.axes[0];
+            }
+            gamepad.buttons.forEach((button, index) => {
+                input[index + 8] = button.value;
+            });
+        }
     }
-    // GamePadAPI   MEGADRIVE
-    // input[8 + 2] INPUT_A;
-    // input[8 + 3] INPUT_B;
-    // input[8 + 1] INPUT_C;
-    // input[8 + 7] INPUT_START;
-    // input[8 + 0] INPUT_X;
-    // input[8 + 4] INPUT_Y;
-    // input[8 + 5] INPUT_Z;
-    // input[8 + 6] INPUT_MODE;
-    gamepad.buttons.forEach((button, index) => {
-        input[index + 8] = button.value;
-    });
+    // keyboard
+    // D-Pad: arrow keys
+    if(keys.has('ArrowUp'))    input[7] = -1;
+    if(keys.has('ArrowDown'))  input[7] = 1;
+    if(keys.has('ArrowLeft'))  input[6] = -1;
+    if(keys.has('ArrowRight')) input[6] = 1;
+    // A, B, C
+    if(keys.has('KeyA')) input[8 + 2] = 1; // A
+    if(keys.has('KeyS')) input[8 + 3] = 1; // B
+    if(keys.has('KeyD')) input[8 + 1] = 1; // C
+    // START
+    if(keys.has('Enter')) input[8 + 7] = 1;
 };
 
 const sound = function(audioBuffer) {
