@@ -6,10 +6,6 @@ Results in a number of weird, wonderful, interesting, insane effects. The softwa
 
 ## Examples
 
-### Demo Video
-
-[![Demo Video](screenshots/s2.png)](https://youtu.be/NOr6cpggte4?si=Mn660RcFDUKrf0lx)
-
 ### Sonic 1
 
 <p align="center">

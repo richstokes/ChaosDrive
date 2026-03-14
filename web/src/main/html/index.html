@@ -121,6 +121,73 @@ body {
 .toolbar-btn:hover {
     background: rgba(0,255,0,0.15);
 }
+#github-link {
+    top: 10px;
+    right: 290px;
+    text-decoration: none;
+}
+#roms-toggle {
+    top: 10px;
+    right: 220px;
+}
+#roms-panel {
+    position: fixed;
+    top: 42px;
+    right: 220px;
+    z-index: 999;
+    background: rgba(0,0,0,0.88);
+    color: #ccc;
+    border: 1px solid #444;
+    border-radius: 6px;
+    padding: 14px 18px;
+    font-family: monospace;
+    font-size: 12px;
+    line-height: 1.6;
+    width: 320px;
+    display: none;
+}
+#roms-panel.visible {
+    display: block;
+}
+#roms-panel h2 {
+    margin: 0 0 8px 0;
+    font-size: 14px;
+    color: #ff0;
+    border-bottom: 1px solid #444;
+    padding-bottom: 4px;
+}
+#roms-panel a {
+    color: #0f0;
+    text-decoration: none;
+}
+#roms-panel a:hover {
+    text-decoration: underline;
+}
+#roms-panel .rom-link {
+    display: block;
+    margin: 6px 0;
+    padding: 6px 10px;
+    background: #222;
+    border: 1px solid #444;
+    border-radius: 4px;
+}
+#roms-panel .rom-link:hover {
+    border-color: #0f0;
+    background: #333;
+}
+#roms-panel .rom-link .rom-title {
+    color: #0f0;
+    font-weight: bold;
+}
+#roms-panel .rom-link .rom-desc {
+    color: #888;
+    font-size: 11px;
+}
+#roms-panel p {
+    margin: 8px 0 4px 0;
+    color: #888;
+    font-size: 11px;
+}
 #screen-toggle {
     top: 10px;
     right: 130px;
@@ -182,6 +249,20 @@ body {
 <title>ChaosDrive</title>
 </head>
 <body>
+<a id="github-link" class="toolbar-btn" href="https://github.com/richstokes/ChaosDrive" target="_blank" rel="noopener">GitHub</a>
+<button id="roms-toggle" class="toolbar-btn">ROMs</button>
+<div id="roms-panel">
+    <h2>Where to Get ROMs</h2>
+    <p>You need a Sega Genesis/Mega Drive ROM file (.bin, .md, .smd, .gen) to use ChaosDrive. Here are some legal sources:</p>
+    <a class="rom-link" href="https://archive.org/download/sonicgenesis_bin" target="_blank" rel="noopener">
+        <span class="rom-title">Sonic the Hedgehog</span><br>
+        <span class="rom-desc">archive.org &mdash; Classic first entry</span>
+    </a>
+    <a class="rom-link" href="https://archive.org/search?query=sega+genesis+rom&and[]=mediatype%3A%22software%22" target="_blank" rel="noopener">
+        <span class="rom-title">Archive.org Genesis Collection</span><br>
+        <span class="rom-desc">Search for more Genesis ROMs</span>
+    </a>
+</div>
 <button id="screen-toggle" class="toolbar-btn">Screen</button>
 <div id="screen-panel">
     <h2>Screen Size</h2>
@@ -246,6 +327,11 @@ body {
         var panel = document.getElementById('controls-panel');
         panel.classList.toggle('visible');
         this.textContent = panel.classList.contains('visible') ? 'Close [X]' : 'Controls [?]';
+    });
+
+    document.getElementById('roms-toggle').addEventListener('click', function() {
+        var panel = document.getElementById('roms-panel');
+        panel.classList.toggle('visible');
     });
 
     (function() {
