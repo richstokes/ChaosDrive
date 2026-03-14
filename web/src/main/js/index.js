@@ -64,8 +64,10 @@ document.addEventListener('keydown', function(e) {
         'Comma','Period'].includes(e.code)) {
         e.preventDefault();
     }
-    if(e.code === 'KeyZ') {
-        pause = !pause;
+    if(e.code === 'KeyZ' && gens) {
+        gens._chaos_reset();
+        gens._start();
+        showChaosMessage('RESET');
     }
     if(e.code === 'Tab' && gens) {
         gens._start();

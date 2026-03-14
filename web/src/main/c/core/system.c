@@ -590,6 +590,11 @@ void system_frame_gen(int do_skip)
 
   /* reset line count */
   line = 0;
+
+#ifdef WASM_GENPLUS
+  /* ChaosDrive: apply CRAM corruption after VBlank DMA but before rendering */
+  { extern void chaos_pre_render_hook(void); chaos_pre_render_hook(); }
+#endif
   
   /* Active Display */
   do

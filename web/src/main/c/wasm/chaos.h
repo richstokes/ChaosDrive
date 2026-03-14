@@ -38,6 +38,12 @@ void EMSCRIPTEN_KEEPALIVE chaos_program_counter_increment(void);
 void EMSCRIPTEN_KEEPALIVE chaos_random_register_corruption(void);
 void EMSCRIPTEN_KEEPALIVE chaos_flip_game_logic_variables(void);
 
+/* Reset all chaos state */
+void EMSCRIPTEN_KEEPALIVE chaos_reset(void);
+
+/* Pre-render hook (called after VBlank DMA, before Active Display) */
+void chaos_pre_render_hook(void);
+
 /* Per-frame update (called from tick) */
 void chaos_per_frame_update(void);
 

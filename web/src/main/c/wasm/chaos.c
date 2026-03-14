@@ -15,6 +15,8 @@
 
 static int cram_corruption_enabled = 0;
 static int fm_corruption_enabled = 0;
+static int cram_randomize_pending = 0;
+static int cram_shift_pending = 0;
 
 /* ======================================================================== */
 /* Helper: mark VRAM dirty so the renderer picks up changes                 */
@@ -131,27 +133,14 @@ void chaos_invert_vram_contents(void)
 
 void chaos_randomize_cram(void)
 {
-    int i, j;
-    uint8 tmp;
-    /* Randomly swap color entries */
-    for (i = 0; i < 0x80; i++)
-    {
-        j = rand() % 0x80;
-        tmp = cram[i];
-        cram[i] = cram[j];
-        cram[j] = tmp;
-    }
-    mark_all_cram_dirty();
+    /* Defer to pre-render hook so it runs after VBlank DMA */
+    cram_randomize_pending = 1;
 }
 
 void chaos_shift_cram_up(void)
 {
-    int i;
-    for (i = 0; i < 0x7F; i++)
-    {
-        cram[i] = cram[i + 1];
-    }
-    mark_all_cram_dirty();
+    /* Defer to pre-render hook so it runs after VBlank DMA */
+    cram_shift_pending = 1;
 }
 
 void chaos_enable_cram_corruption(void)
@@ -162,6 +151,14 @@ void chaos_enable_cram_corruption(void)
 void chaos_disable_cram_corruption(void)
 {
     cram_corruption_enabled = 0;
+}
+
+void chaos_reset(void)
+{
+    cram_corruption_enabled = 0;
+    fm_corruption_enabled = 0;
+    cram_randomize_pending = 0;
+    cram_shift_pending = 0;
 }
 
 /* ======================================================================== */
@@ -519,12 +516,43 @@ void chaos_flip_game_logic_variables(void)
 }
 
 /* ======================================================================== */
-/* Per-frame update (persistent effects)                                    */
+/* Pre-render hook: called after VBlank DMA, before Active Display          */
+/* This ensures CRAM modifications aren't overwritten by game palette DMA   */
 /* ======================================================================== */
 
-void chaos_per_frame_update(void)
+void chaos_pre_render_hook(void)
 {
-    /* Persistent CRAM corruption: randomize a few CRAM bytes each frame */
+    int dirty = 0;
+
+    /* Apply deferred CRAM randomize */
+    if (cram_randomize_pending)
+    {
+        int i, j;
+        uint8 tmp;
+        for (i = 0; i < 0x80; i++)
+        {
+            j = rand() % 0x80;
+            tmp = cram[i];
+            cram[i] = cram[j];
+            cram[j] = tmp;
+        }
+        cram_randomize_pending = 0;
+        dirty = 1;
+    }
+
+    /* Apply deferred CRAM shift */
+    if (cram_shift_pending)
+    {
+        int i;
+        for (i = 0; i < 0x7F; i++)
+        {
+            cram[i] = cram[i + 1];
+        }
+        cram_shift_pending = 0;
+        dirty = 1;
+    }
+
+    /* Persistent CRAM corruption */
     if (cram_corruption_enabled)
     {
         int i;
@@ -533,9 +561,21 @@ void chaos_per_frame_update(void)
             int idx = rand() % 0x80;
             cram[idx] = rand() % 256;
         }
-        mark_all_cram_dirty();
+        dirty = 1;
     }
 
+    if (dirty)
+    {
+        mark_all_cram_dirty();
+    }
+}
+
+/* ======================================================================== */
+/* Per-frame update (persistent effects)                                    */
+/* ======================================================================== */
+
+void chaos_per_frame_update(void)
+{
     /* Persistent FM corruption: inject random frequency/volume corruption */
     if (fm_corruption_enabled)
     {
