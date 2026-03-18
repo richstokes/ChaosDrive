@@ -107,6 +107,10 @@ This will install all dependencies (Emscripten SDK, npm packages, etc.), build t
 - **E** — Flip VDP display mode (interlace, width, shadow/highlight)
 - **/** — Flip random game logic variables (lives, score, position, etc)
 
+### Utility
+
+- **1** — Save screenshot to downloads folder (PNG)
+
 ## Project Structure
 
 ### `web/` — WebAssembly version (recommended)
