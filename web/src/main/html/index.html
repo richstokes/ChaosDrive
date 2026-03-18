@@ -123,17 +123,72 @@ body {
 }
 #github-link {
     top: 10px;
-    right: 290px;
+    right: 365px;
     text-decoration: none;
+}
+#about-toggle {
+    top: 10px;
+    right: 290px;
+}
+#about-panel {
+    position: fixed;
+    top: 42px;
+    right: 290px;
+    z-index: 999;
+    background: rgba(0,0,0,0.92);
+    color: #ccc;
+    border: 1px solid #444;
+    border-radius: 6px;
+    padding: 18px 22px;
+    font-family: monospace;
+    font-size: 12px;
+    line-height: 1.7;
+    width: 380px;
+    max-height: calc(100vh - 60px);
+    overflow-y: auto;
+    display: none;
+}
+#about-panel.visible {
+    display: block;
+}
+#about-panel h2 {
+    margin: 0 0 10px 0;
+    font-size: 16px;
+    color: #ff0;
+    border-bottom: 1px solid #444;
+    padding-bottom: 6px;
+}
+#about-panel h3 {
+    margin: 14px 0 4px 0;
+    font-size: 12px;
+    color: #0f0;
+}
+#about-panel p {
+    margin: 6px 0;
+    color: #bbb;
+}
+#about-panel .effect-name {
+    color: #ff0;
+    font-weight: bold;
+}
+#about-panel .tech {
+    color: #0f0;
+}
+#about-panel a {
+    color: #0f0;
+    text-decoration: none;
+}
+#about-panel a:hover {
+    text-decoration: underline;
 }
 #roms-toggle {
     top: 10px;
-    right: 220px;
+    right: 222px;
 }
 #roms-panel {
     position: fixed;
     top: 42px;
-    right: 220px;
+    right: 222px;
     z-index: 999;
     background: rgba(0,0,0,0.88);
     color: #ccc;
@@ -190,12 +245,12 @@ body {
 }
 #screen-toggle {
     top: 10px;
-    right: 130px;
+    right: 140px;
 }
 #screen-panel {
     position: fixed;
     top: 42px;
-    right: 130px;
+    right: 140px;
     z-index: 999;
     background: rgba(0,0,0,0.88);
     color: #ccc;
@@ -250,6 +305,52 @@ body {
 </head>
 <body>
 <a id="github-link" class="toolbar-btn" href="https://github.com/richstokes/ChaosDrive" target="_blank" rel="noopener">GitHub</a>
+<button id="about-toggle" class="toolbar-btn">About</button>
+<div id="about-panel">
+    <h2>About ChaosDrive</h2>
+    <p>ChaosDrive is a virtual circuit-bending playground for the Sega Genesis.
+       It runs a full Genesis emulator (<span class="tech">Genesis-Plus-GX</span>
+       compiled to <span class="tech">WebAssembly</span>) in your browser, then lets
+       you jam a virtual screwdriver into its internals in real time.</p>
+
+    <h3>How It Works</h3>
+    <p>The emulator&rsquo;s video, audio, and CPU memory are all exposed to JavaScript
+       through the WASM heap. Each chaos key directly mutates the emulator&rsquo;s
+       internal state &mdash; the same bytes a real chip would read &mdash; so every
+       glitch you see is the hardware faithfully rendering corrupted data.</p>
+
+    <h3>Notable Effects</h3>
+    <p><span class="effect-name">VRAM Shifts</span> &mdash; Tile and sprite
+       graphics live in Video RAM as 8&times;8 pixel patterns. Shifting VRAM
+       by a few bytes scrambles which tile maps to which pattern,
+       smearing the whole scene like a broken CRT.</p>
+    <p><span class="effect-name">CRAM Corruption</span> &mdash; The Genesis
+       stores its 64-color palette in Color RAM (CRAM). Randomizing or
+       rotating these entries swaps every on-screen color at once,
+       creating psychedelic palette cycling.</p>
+    <p><span class="effect-name">VSRAM / Column Melt</span> &mdash; Vertical
+       Scroll RAM controls how far each 2-tile column is scrolled.
+       Corrupting it makes columns slide independently, giving the
+       classic &ldquo;melting screen&rdquo; look.</p>
+    <p><span class="effect-name">H-Scroll Waviness</span> &mdash; The VDP
+       supports per-scanline horizontal scroll offsets. Writing random
+       values here warps each line left or right, producing a
+       wavy, heat-shimmer distortion.</p>
+    <p><span class="effect-name">FM Corruption &amp; Bitcrush</span> &mdash;
+       The YM2612 FM synth chip has operator registers controlling
+       frequency, feedback, and envelope. Corrupting these detunes
+       notes and creates harsh metallic timbres. Bitcrushing
+       zeroes out low bits of the audio buffer for lo-fi distortion.</p>
+    <p><span class="effect-name">CPU Mayhem</span> &mdash; Incrementing the
+       68000&rsquo;s program counter or flipping its registers makes
+       the CPU execute from the wrong address, often causing
+       the game to spiral into uncharted code paths.</p>
+
+    <h3>Tech</h3>
+    <p>Emulation: <span class="tech">C &rarr; Emscripten &rarr; WebAssembly</span><br>
+       Rendering: <span class="tech">Canvas 2D</span> (raw VRAM &rarr; ImageData @ 60 fps)<br>
+       Audio: <span class="tech">Web Audio API</span> (44.1 kHz, stereo)</p>
+</div>
 <button id="roms-toggle" class="toolbar-btn">ROMs</button>
 <div id="roms-panel">
     <h2>Where to Get ROMs</h2>
@@ -266,8 +367,8 @@ body {
 <button id="screen-toggle" class="toolbar-btn">Screen</button>
 <div id="screen-panel">
     <h2>Screen Size</h2>
-    <button data-size="default" class="active">Default (640&times;480)</button>
-    <button data-size="double">Double (1280&times;960)</button>
+    <button data-size="default">Default (640&times;480)</button>
+    <button data-size="double" class="active">Double (1280&times;960)</button>
     <button data-size="fullscreen">Fullscreen</button>
 </div>
 <button id="controls-toggle" class="toolbar-btn">Controls [?]</button>
@@ -318,6 +419,9 @@ body {
     <div class="row"><span><span class="key">J</span></span><span class="desc">Corrupt random register</span></div>
     <div class="row"><span><span class="key">E</span></span><span class="desc">Flip VDP display mode</span></div>
     <div class="row"><span><span class="key">/</span></span><span class="desc">Flip game logic variables</span></div>
+
+    <h3>Utility</h3>
+    <div class="row"><span><span class="key">1</span></span><span class="desc">Save screenshot to downloads</span></div>
 </div>
 <div id="rom-picker">
     <h1>ChaosDrive</h1>
@@ -330,6 +434,11 @@ body {
         var panel = document.getElementById('controls-panel');
         panel.classList.toggle('visible');
         this.textContent = panel.classList.contains('visible') ? 'Close [X]' : 'Controls [?]';
+    });
+
+    document.getElementById('about-toggle').addEventListener('click', function() {
+        var panel = document.getElementById('about-panel');
+        panel.classList.toggle('visible');
     });
 
     document.getElementById('roms-toggle').addEventListener('click', function() {
@@ -389,9 +498,9 @@ body {
                 /* reset to default look when exiting fullscreen via Esc */
                 var activeBtn = screenPanel.querySelector('button.active');
                 if (activeBtn && activeBtn.getAttribute('data-size') === 'fullscreen') {
-                    setActive(screenPanel.querySelector('button[data-size="default"]'));
-                    canvas.style.width = '640px';
-                    canvas.style.height = '480px';
+                    setActive(screenPanel.querySelector('button[data-size="double"]'));
+                    canvas.style.width = '1280px';
+                    canvas.style.height = '960px';
                 }
             }
         });

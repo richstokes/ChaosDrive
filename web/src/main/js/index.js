@@ -113,6 +113,8 @@ const loadRom = function(bytes) {
     canvas = document.getElementById('screen');
     canvas.setAttribute('width', CANVAS_WIDTH);
     canvas.setAttribute('height', CANVAS_HEIGHT);
+    canvas.style.width = '1280px';
+    canvas.style.height = '960px';
     let pixelRatio = window.devicePixelRatio ? window.devicePixelRatio : 1;
     if(pixelRatio > 1 && window.screen.width < CANVAS_WIDTH) {
         canvas.style.width = CANVAS_WIDTH + "px";
@@ -294,6 +296,15 @@ const chaosScan = function() {
     }
     if(keys.has('Slash') && !prevKeys.has('Slash')) {
         gens._chaos_flip_game_logic_variables(); showChaosMessage('Game variables flipped');
+    }
+
+    // --- Screenshot (single press) ---
+    if(keys.has('Digit1') && !prevKeys.has('Digit1')) {
+        const link = document.createElement('a');
+        link.download = 'chaosdrive-' + Date.now() + '.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+        showChaosMessage('Screenshot saved');
     }
 
     // Update previous key state
